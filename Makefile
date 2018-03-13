@@ -1,12 +1,8 @@
-main.pdf: main.tex main.bbl main.blg
-	xelatex $< > /dev/null
-	xelatex $< > /dev/null
-
-main.aux: main.tex
-	xelatex $^ > /dev/null
-
-main.bbl main.blg: sample.bib main.aux
+main.pdf: main.tex sample.bib
+	xelatex main > /dev/null
 	bibtex main > /dev/null
+	xelatex main > /dev/null
+	xelatex main > /dev/null
 
 clean:
 	rm -f *.pdf

@@ -1,5 +1,5 @@
 main.pdf: main.tex sample.bib
-	xelatex main > /dev/null
+	xelatex main
 	bibtex main > /dev/null
 	xelatex main > /dev/null
 	xelatex main > /dev/null

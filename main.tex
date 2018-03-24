@@ -36,39 +36,25 @@
 
 \begin{document}
 
-\section*{Review on embedding-based autocompletion} % Major section
+\section*{Autocompletion on Wikipedia corpus}
+There are 591,468 formula in Wikipedia corpus from NTCIR-12 Formula Browser task,
+132,372 structrually unique TeX expressions (consider commutativity) obtained after indexing.
 
-Embedding technology has been studied by many studies.
-Same idea from those studies can be used to tag math expressions so that autocompletion can actually associate text tag with a formula, in this we may increase the suggestion set for a math query in either text or formula.
+\textbf{Addressing the assigned question}:
+Current occurrence-of-formula may not well reflect formula popularity, in the current implementation, popularity is counted by formula frequency, however, the case study shows (see next section) suggested candidate might be not very popular according to common sense math knowledge, the two major reasons are:
+\begin{itemize}
+\item The Wikipedia corpus does reflect popularity very well,
+fundamental design of Wikipedia is to describe one concept only in one page, so popular formula such as Pythagorean theorem is not shown too many times in the corpus. Surprisingly, only 7 times (first appearing in Algebraic\_curve:51) according to our index. This suggests a better choice of corpus would be \textbf{Q\&A website} (e.g. Math StackExchange) where a concept like Pythagorean theorem may be asked/described much more frequently than these in Wikipedia.
+\item The current implementation counts formula frequency, however, many rare formula overall may appear in a single document (e.g. particularly addressing this formula) many times. But much less or few mentioned in other corpus document. One suggestion for the next step is to use \textbf{document frequency} instead as the popularity number to reflect formula frequency, such that the it would not be interfered by those document/Wiki page that particularly describe a rare math concept/formula extensively.
+\end{itemize}
 
-[1] is a very early exploration on tag recommendation using embedding, 
-it uses (words, docs, tags) triplet to tag training document, and cluster them by Spectral Recursive Embedding.
-They reviewed the methods used to tag document, first method is to use low rank matrix (e.g. SVD or near-optimal approximation CUR) to compute a matrix whose eigenvalues approximate that of a document matrix. The author uses a symmetric matrix approximation method called Lanczos. The Spectral Recursive Embedding is used to partition bipartite graph. They also define a function in 2D domain to evaluate a combination of precision and recall.
-A document is represented by words and tags annotated by users, they can further be represented in a bipartite graph with terms, document and weight of document.
-Usually \textbf{collaborative filtering} is used to generate tags given query and training documents where they suggest the top ranked tags from most similar document. However, this method is not efficient for real-world scenarios. The authors adapt Poisson mixture model to handle this disadvantage.
-For new document, they use Bayes rule to estimate prior probabilities for each class and rank by probability.
+As for whether we should account subexpressions.
+I believe in terms of QAC model, this is not desired, so think about $a^2+b^2=c^2$, if every subexpression is indexed, then in a sufficiently large corpus the following inequality holds and the frequency gap can be very large: $freq(a^2+b^2=c^2) < freq(a^2+b^2) < freq(a^2+) < freq(a^2)$. So if querying $a^2$, the desired formula $a^2+b^2=c^2$ is far less significant in terms of popularity compared to $a^2 + $, $(a^2)$ etc. It is more rare to ``jump'' directly to suggest a common formula like  $a^2+b^2=c^2$ and save user's input more than one character where in QAC the number of characters saved from typing is basically the major metric to measure effectiveness of autocomplete system. 
 
-[2] argues lexical features like string matching do not capture semantic similarity beyond trivial level. \textbf{Word embeddings} is Terms are represented in semantic space as vectors such that similarity in semantic level can be meaningfully represented [3, 4]. 
-Some word embedding is based on the insight to use external sources of semantic knowledge such as Wikipedia.
-Latent semantic analysis (LSA) incorporate words appearing in similar contexts tend to have similar meaning, so they use distance between word vectors as proxy for semantic similarity. Continuous bad-of-words (CBOW) and Skip-gram are variation from neural network language model, where a word is predicted from its surrounding words. Another approach is negative sampling, where words next to each other are used as positive examples and random ordered words are sampled as negative examples.
-Several development has been trying to extend word level semantics to phrase sentence or even document-level.
-For out-of-vocabulary words is mapped to random vectors and remember which OOV maps to which random vector. This can help important semantic such as names of persons to relate their appearing in different text.
-In [4], Unfolding recursive autoencoder (RAE) is used. In order to keep arbitrary length of two sentences, they use dynamic polling layer which output a fixed-size representation. Any classify can be used to test if two sentences are paraphrases or not. The RAE uses tree structure representation of sentence, learns a vector to represent its direct children using auto-encoder. The overall error to minimize is the sum error of all children node. After learning, unfold each node vector with the same tree structure as during encoding. The unfolding is important to capture the entire subtree to the leaf nodes.
-In earlier research the vector dimension vary based on the sentence, dynamic pooling is then used to map a larger feature matrix to smaller matrix applying min/max function with a sub-region. After pooling, they normalize each entry to have 0 mean and variance 1.
-The Distributed memory model of Paragraph Vectors (PV-DM) used in [3], first obtain vector on already seen part from paragraph, and add more columns in paragraph vector. In this way it produce a far less sized dimension than bag-of-n-gram features.
-
-[5] uses session information to construction query reformulation vectors where each reformulation is dependent on two previous user query history. This information helps their QAC MRR performance improve more than 10\% over a supervised ranker baseline.
+\section*{Generated example}
 
 \section{Reference}
 {\setlength{\parindent}{0cm}
 [1] Song, Yang, Ziming Zhuang, Huajing Li, Qiankun Zhao, Jia Li, Wang-Chien Lee, and C. Lee Giles. “Real-Time Automatic Tag Recommendation.” In Proceedings of the 31st Annual International ACM SIGIR Conference on Research and Development in Information Retrieval, 515–522. SIGIR ’08. New York, NY, USA: ACM, 2008. https://doi.org/10.1145/1390334.1390423.
-
-[2] Kenter, Tom, and Maarten de Rijke. “Short Text Similarity with Word Embeddings.” In Proceedings of the 24th ACM International on Conference on Information and Knowledge Management, 1411–1420. CIKM ’15. New York, NY, USA: ACM, 2015. https://doi.org/10.1145/2806416.2806475.
-
-[3] Le, Quoc V., and Tomas Mikolov. “Distributed Representations of Sentences and Documents.” ArXiv:1405.4053 [Cs], May 16, 2014. http://arxiv.org/abs/1405.4053.
-
-[4] Socher, Richard, Eric H. Huang, Jeffrey Pennington, Andrew Y. Ng, and Christopher D. Manning. “Dynamic Pooling and Unfolding Recursive Autoencoders for Paraphrase Detection.” In Proceedings of the 24th International Conference on Neural Information Processing Systems, 801–809. NIPS’11. USA: Curran Associates Inc., 2011. http://dl.acm.org/citation.cfm?id=2986459.2986549.
-
-[5] Mitra, Bhaskar. “Exploring Session Context Using Distributed Representations of Queries and Reformulations.” In Proceedings of the 38th International ACM SIGIR Conference on Research and Development in Information Retrieval, 3–12. SIGIR ’15. New York, NY, USA: ACM, 2015. https://doi.org/10.1145/2766462.2767702.
 
 } \end{document}

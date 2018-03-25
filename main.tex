@@ -22,6 +22,8 @@
 \geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
 
 \usepackage{graphicx} % Required for including pictures
+\usepackage{amsfonts}
+\usepackage{amsmath}
 
 \usepackage{float} % Allows putting an [H] in \begin{figure} to specify the exact location of the figure
 \usepackage{wrapfig} % Allows in-line images such as the example fish picture
@@ -53,8 +55,118 @@ I believe in terms of QAC model, this is not desired, so think about $a^2+b^2=c^
 
 \section*{Generated example}
 
-\section{Reference}
-{\setlength{\parindent}{0cm}
-[1] Song, Yang, Ziming Zhuang, Huajing Li, Qiankun Zhao, Jia Li, Wang-Chien Lee, and C. Lee Giles. “Real-Time Automatic Tag Recommendation.” In Proceedings of the 31st Annual International ACM SIGIR Conference on Research and Development in Information Retrieval, 515–522. SIGIR ’08. New York, NY, USA: ACM, 2008. https://doi.org/10.1145/1390334.1390423.
+\subsection{Query $x^2+y$}
+\begin{center}
+\begin{tabular}{lcc}
+Suggesions $\backslash$ Query  & $x^2 $ & Frequency\\
+\hline
+ 1 &  $ \mathbb{Z}_{4}^{6}\times\mathbb{Z}_{3}\wr\mathrm{S}_{8}\times\mathbb{Z}_{2}\wr\mathrm{S}_{12} $
+   & 518 \\
+ 2 &  $ O\left(N^{3\over 2}\log^{2}N\right) $
+   & 405 \\
+ 3 &  $  \left(\frac{n^{2}+1}{2}\right)n $
+   & 376 \\
+\end{tabular}
+\end{center}
 
-} \end{document}
+\begin{center}
+\begin{tabular}{lcc}
+Suggesions $\backslash$ Query  & $x^2+ $ & Frequency\\
+\hline
+ 1 &  $\left(\frac{n^{2}+1}{2}\right)n$
+   & 376 \\
+ 2 &  $ \displaystyle E\left[\sigma^{2}-s_{biased}^{2}\right]\displaystyle=...$
+   & 243 \\
+ 3 &  $  \frac{1}{2}E\epsilon^{2}\pi(r_{o}^{2}-r_{i}^{2})L $
+   & 201 \\
+ 4 &  $  \int_{0}^{\infty}\frac{\log(x)}{(1+x^{2})^{2}}\,dx $
+   & 140 \\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{lcc}
+Suggesions $\backslash$ Query  & $x^2+ y$ & Frequency\\
+\hline
+ 1 &  $ 2y^{2}(x^{2}+y^{2})-2by^{2}(x+y)+(b^{2}-3a^{2})y^{2}- ...$
+   & 42 \\
+ 2 &  $ \alpha^{6}+\alpha^{3}=(\alpha^{2}+\alpha)+(\alpha^{2}+1)=\alpha+1=\alpha^{5} $
+   & 32 \\
+ 3 &  $  t(t-1)(t-2)(... - 230t^{4}+529t^{3}-814t^{2}+775t-352) $
+   & 32 \\
+ 4 &  $   z^{4}+z^{3}+z^{2}+z+1 $
+   & 27 \\
+\end{tabular}
+\end{center}
+
+\subsection{Query $ax^2+b$}
+\begin{center}
+\begin{tabular}{lcc}
+Suggesions $\backslash$ Query  & $ax$ & Frequency\\
+\hline
+ 1 &  $ | $
+   & 8230 \\
+ 2 &  $  M_{\mathrm{w}}  $
+   & 1150 \\
+ 3 &  $  (\text{Unicode symbol} \phi)  $
+   & 1090 \\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{lcc}
+Suggesions $\backslash$ Query  & $ax^2$ & Frequency\\
+\hline
+ 1 &  $ \mathbb{Z}_{4}^{6}\times\mathbb{Z}_{3}\wr\mathrm{S}_{8}\times\mathbb{Z}_{2}\wr\mathrm{S}_{12} $
+   & 518 \\
+ 2 &  $  O\left(N^{3\over 2}\log^{2}N\right)  $
+   & 405 \\
+ 3 &  $  ... \tfrac{1}{2}\left(\dot{x}\right)^{2}+\tfrac{1}{2}\alpha x^{2}+\tfrac{1}{4}\beta x^{4}=H $
+   & 305 \\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{lcc}
+Suggesions $\backslash$ Query  & $ax^2 + $ & Frequency\\
+\hline
+ 1 &  $  ... \tfrac{1}{2}\left(\dot{x}\right)^{2}+\tfrac{1}{2}\alpha x^{2}+\tfrac{1}{4}\beta x^{4}=H $
+   & 305 \\
+ 2 &  $  |f(z)|(dx^{2}+dy^{2})  $
+   & 182 \\
+ 3 &  $  O(m\times n+n^{2}\times log(n))  $
+   & 74 \\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{lcc}
+Suggesions $\backslash$ Query  & $ax^2 +b $ & Frequency\\
+\hline
+ 1 &  $ 2y^{2}(x^{2}+y^{2})-2by^{2}(x+y)+(b^{2}-3a^{2})y^{2}- ...$
+   & 42 \\
+ 2 &  $ \alpha^{6}+\alpha^{3}=(\alpha^{2}+\alpha)+(\alpha^{2}+1)=\alpha+1=\alpha^{5} $
+   & 32 \\
+ 3 &  $  ax^{2}+bx+c=0   $
+   & 23 \\
+ 4 &  $  ax^{2}+bx+c   $
+   & 20 \\
+\end{tabular}
+\end{center}
+
+\section*{Pseudo-code for the auto-completion algorithm}
+See previous report.
+
+\section*{Thoughts on the absence of logs}
+Query log may be well stimulated by the posted questions on Math Q\&A data such as posts from Math StackExchange.
+
+There are two reasons, first is common equation is more likely to be appeared in question post (tagged duplicate question) than in Wikipedia page.
+Second is, the lower math knowledge level of these question, the more common-sense popularity it may represent.
+
+\section*{Notes on the current collaboration with PennState}
+OPT based approach may need to address the possible problem that incomplete latex string such as "\textbackslash frac\{" will not be handled by our semantic approach thus no suggestions will be shown, so in this case we may want to experience/research linear prefix match as alternative fallback, Shaurya's first idea is also using prefix tree, but elastic search already has provided functionality for prefix-matching (using FSA), so I suggest maybe to experience linear prefix match, the quick way is utilize Elastic and see some results, before implementing from scratch.
+However, implementing a Trie that exists in memory is easy but it is tricky to implement a Trie that can be saved onto disk, we do not want to reindex everything every time the search engine restarts.
+
+Our week plan is I try to index a large data set, see how well the suggestions look like.
+On Shaurya's side, he may want to read A0 docs and get familiar with math search data structure. Also he want to either implement Trie-like structure or use Elastic for linear autocompletion.
+\end{document}

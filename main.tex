@@ -18,8 +18,16 @@
 
 \documentclass[12pt]{article} % Default font size is 12pt, it can be changed here
 
-\usepackage{geometry} % Required to change the page size to A4
-\geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily,
+    mathescape
+}
+
+\usepackage{hyperref}
+
+% \usepackage{geometry} % Required to change the page size to A4
+% \geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
 
 \usepackage{graphicx} % Required for including pictures
 \usepackage{amsfonts}
@@ -34,139 +42,229 @@
 
 %\setlength\parindent{0pt} % Uncomment to remove all indentation from paragraphs
 
-\graphicspath{{Pictures/}} % Specifies the directory where pictures are stored
+%\graphicspath{{Pictures/}} % Specifies the directory where pictures are stored
 
 \begin{document}
 
-\section*{Autocompletion on Wikipedia corpus}
-There are 591,468 formula in Wikipedia corpus from NTCIR-12 Formula Browser task,
-132,372 structrually unique TeX expressions (consider commutativity) obtained after indexing.
+\title{Autocompletion on Wikipedia corpus (Second Try)}
+\author{Wei Zhong}
+\maketitle
 
-\textbf{Addressing the assigned question}:
-Current occurrence-of-formula may not well reflect formula popularity, in the current implementation, popularity is counted by formula frequency, however, the case study shows (see next section) suggested candidate might be not very popular according to common sense math knowledge, the two major reasons are:
+Last time we identify the following major defects:
 \begin{itemize}
-\item The Wikipedia corpus does reflect popularity very well,
-fundamental design of Wikipedia is to describe one concept only in one page, so popular formula such as Pythagorean theorem is not shown too many times in the corpus. Surprisingly, only 7 times (first appearing in Algebraic\_curve:51) according to our index. This suggests a better choice of corpus would be \textbf{Q\&A website} (e.g. Math StackExchange) where a concept like Pythagorean theorem may be asked/described much more frequently than these in Wikipedia.
-\item The current implementation counts formula frequency, however, many rare formula overall may appear in a single document (e.g. particularly addressing this formula) many times. But much less or few mentioned in other corpus document. One suggestion for the next step is to use \textbf{document frequency} instead as the popularity number to reflect formula frequency, such that the it would not be interfered by those document/Wiki page that particularly describe a rare math concept/formula extensively.
+\item No symbol-wise similarity, this tends to allow many semantically different expressions being represented by the first-appear one which may not be an intuitive results.
+\item Only taking into account the frequency, and the frequency does not reflect popularity due to lack of query log and also the above point.
+\item No structure similarity, a simple query may suggest a very complex and large expression.
+\item Lack the definition for ``unique expression''.
 \end{itemize}
 
-As for whether we should account subexpressions.
-I believe in terms of QAC model, this is not desired, so think about $a^2+b^2=c^2$, if every subexpression is indexed, then in a sufficiently large corpus the following inequality holds and the frequency gap can be very large: $freq(a^2+b^2=c^2) < freq(a^2+b^2) < freq(a^2+) < freq(a^2)$. So if querying $a^2$, the desired formula $a^2+b^2=c^2$ is far less significant in terms of popularity compared to $a^2 + $, $(a^2)$ etc. It is more rare to ``jump'' directly to suggest a common formula like  $a^2+b^2=c^2$ and save user's input more than one character where in QAC the number of characters saved from typing is basically the major metric to measure effectiveness of autocomplete system. 
+To address the above issues, first I propose a definition to distinguish ``unique expressions''.
+Basically it performs a search on existing index, and use the Approach0 similarity measurement (including structural and symbolic similarity)
+to test the uniqueness of a expression with all relevant expressions in existing index.
 
+The uniqueness is the inverse of highest similarity score (scaled from 0 to 1) between query and all relevant expressions.
+Given a threshold value (currently 0.9), if any indexed expression has a similarity score larger than the threshold, it is treated as identical expressions, and the frequency will
+increase onto the expression ID which represents the unique expressions.
+Otherwise, it is an unique expression, and will be indexed with a separate expression ID with an initial frequency equals to one.
+
+The downside of measuring uniqueness by a thorough search per indexing expression is that it largely increases index time, on my machine, it takes more than 3 hours to index the Wiki dataset.
+
+On the other hand, at query time, the new version not only takes into account frequency, but also include symbol-wise/structure similarity, search level (corresponding to the nested level
+of a sub-expression match).
+The formula for scoring suggestions after several rounds of tuning is,
+$$
+\text{score} = \frac{s \cdot f \cdot l }{1 + l \cdot \log(1 + l)}
+$$
+where $s$ is scaled similarity score produced by original  Approach0 similarity measurement (including structural and symbolic similarity),
+$l$ is search level and $f$ is the frequency of that unique expression.
+
+The basic idea for this scoring formula is that we want to penalize search depth (so that we tend to avoid huge suggestion expression) but this penalty should not be too much and we may combine the frequency and search depth together, since a large but good suggestion (popular) can save user more typing. So it only uses a log level penalty factor at denominator while also multiplying the frequency at nominator. Furthermore, it adds structure and symbol similarity awareness by introducing $s$ onto nominator.
+
+During implementation, I also spot a query script bug which explains why last time we get many structurally irrelevant result.
+When query JSON is sent to qac daemon, the query script does not strip the document identifier (e.g. "2D\_computer\_graphics:0) so that the identifier is treated as part of LaTeX string.
+See the following commit for the bug fix:
+\url{https://github.com/approach0/search-engine/commit/dbbafb19232186efb25b5b509ff0e1ed4babb7fe#diff-48e4aa3dec7962c5ee797ddb21e8e22d}
+
+\pagebreak
+The concluded algorithm pseudo code is shown below:
+\vspace{2cm}
+
+\begin{lstlisting}
+Function index(tex)
+    result := math_expr_search(tex);
+    if result is not empty:
+        threshold := MAX_MATH_EXPR_SIM_SCALE * 0.9
+        for r in result:
+            if r.score > threshold:
+                key_value_db[r.exprID].freq += 1
+    else:
+        operator_tree := parse(tex)
+        if no parser error reported:
+            cur_len := len(key_value_db)
+            new_exprID := cur_len + 1
+            key_value_db[new_exprID].freq := 1
+            Index math expression by operator_tree
+
+Function search(tex)
+    result := math_expr_search(tex);
+    for each result f := key_value_db[new_exprID].freq
+    rank result by scoring formula $\frac{s \cdot f \cdot l }{1 + l \cdot \log(1 + l)}$
+\end{lstlisting}
+
+\pagebreak
 \section*{Generated example}
 
 \subsection{Query $x^2+y$}
 \begin{center}
-\begin{tabular}{lcc}
-Suggesions $\backslash$ Query  & $x^2 $ & Frequency\\
+\begin{tabular}{lccc}
+Suggesions $\backslash$ Query  & $x^2 $ & Frequency & Score \\
 \hline
- 1 &  $ \mathbb{Z}_{4}^{6}\times\mathbb{Z}_{3}\wr\mathrm{S}_{8}\times\mathbb{Z}_{2}\wr\mathrm{S}_{12} $
-   & 518 \\
- 2 &  $ O\left(N^{3\over 2}\log^{2}N\right) $
-   & 405 \\
- 3 &  $  \left(\frac{n^{2}+1}{2}\right)n $
-   & 376 \\
+ 1 &  $ O(R^{2})\,\! $ & 302 & 46.85 \\
+ 2 &  $ r^{2}m $ & 165 & 32.26 \\
+ 3 &  $ q\sim p^{2} $ & 131 & 25.61 \\
+ 4 &  $ f^{2}(\theta) $ & 84 & 16.42 \\
 \end{tabular}
 \end{center}
 
 \begin{center}
-\begin{tabular}{lcc}
-Suggesions $\backslash$ Query  & $x^2+ $ & Frequency\\
+\begin{tabular}{lccc}
+Suggesions $\backslash$ Query  & $x^2+ $ & Frequency & Score \\
 \hline
- 1 &  $\left(\frac{n^{2}+1}{2}\right)n$
-   & 376 \\
- 2 &  $ \displaystyle E\left[\sigma^{2}-s_{biased}^{2}\right]\displaystyle=...$
-   & 243 \\
- 3 &  $  \frac{1}{2}E\epsilon^{2}\pi(r_{o}^{2}-r_{i}^{2})L $
-   & 201 \\
- 4 &  $  \int_{0}^{\infty}\frac{\log(x)}{(1+x^{2})^{2}}\,dx $
-   & 140 \\
+ 1 &  $ x^{2}+y^{2}=r^{2}.\! $ & 100 & 9.80 \\
+ 2 &  $ \scriptstyle r=\sqrt{a^{2}+b^{2}} $ & 44 & 3.63 \\
+ 3 &  $ x^{2}+y^{2}=1 $ & 25 & 2.95 \\
+ 4 &  $ \sqrt{a^{2}+b^{2}} $ & 19 & 2.37 \\
 \end{tabular}
 \end{center}
 
+
 \begin{center}
-\begin{tabular}{lcc}
-Suggesions $\backslash$ Query  & $x^2+ y$ & Frequency\\
+\begin{tabular}{lccc}
+Suggesions $\backslash$ Query  & $x^2 + y$ & Frequency & Score \\
 \hline
- 1 &  $ 2y^{2}(x^{2}+y^{2})-2by^{2}(x+y)+(b^{2}-3a^{2})y^{2}- ...$
-   & 42 \\
- 2 &  $ \alpha^{6}+\alpha^{3}=(\alpha^{2}+\alpha)+(\alpha^{2}+1)=\alpha+1=\alpha^{5} $
-   & 32 \\
- 3 &  $  t(t-1)(t-2)(... - 230t^{4}+529t^{3}-814t^{2}+775t-352) $
-   & 32 \\
- 4 &  $   z^{4}+z^{3}+z^{2}+z+1 $
-   & 27 \\
+ 1 &  $ f(x)=x^{3}+x $ & 11 & 1.61 \\
+ 2 &  $ x^{2}+px+q=0 $ & 12 & 1.41 \\
+ 3 &  $ f_{c}(z)=z^{2}+c $ & 9 & 1.05 \\
+ 4 &  $ z\mapsto\bar{z}^{2}+c\,. $ & 5 & 0.98 \\
 \end{tabular}
 \end{center}
+
+\pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Query $ax^2+b$}
+
 \begin{center}
-\begin{tabular}{lcc}
-Suggesions $\backslash$ Query  & $ax$ & Frequency\\
+\begin{tabular}{lccc}
+Suggesions $\backslash$ Query  & $ ax $ & Frequency & Score \\
 \hline
- 1 &  $ | $
-   & 8230 \\
- 2 &  $  M_{\mathrm{w}}  $
-   & 1150 \\
- 3 &  $  (\text{Unicode symbol} \phi)  $
-   & 1090 \\
+ 1 &  $ d_{BO}\!\,- $ & 2667 & 412.08 \\
+ 2 &  $ \mathbf{F}=m\mathbf{g} $ & 1287 & 250.84 \\
+ 3 &  $ x_{\mathrm{new}} $ & 829 & 102.68 \\
+ 4 &  $ b^{th} $ & 521 & 80.50 \\
 \end{tabular}
 \end{center}
 
 \begin{center}
-\begin{tabular}{lcc}
-Suggesions $\backslash$ Query  & $ax^2$ & Frequency\\
+\begin{tabular}{lccc}
+Suggesions $\backslash$ Query  & $ ax^2 $ & Frequency & Score \\
 \hline
- 1 &  $ \mathbb{Z}_{4}^{6}\times\mathbb{Z}_{3}\wr\mathrm{S}_{8}\times\mathbb{Z}_{2}\wr\mathrm{S}_{12} $
-   & 518 \\
- 2 &  $  O\left(N^{3\over 2}\log^{2}N\right)  $
-   & 405 \\
- 3 &  $  ... \tfrac{1}{2}\left(\dot{x}\right)^{2}+\tfrac{1}{2}\alpha x^{2}+\tfrac{1}{4}\beta x^{4}=H $
-   & 305 \\
+ 1 &  $ I=r^{2}m $ & 96 & 18.77 \\
+ 2 &  $ O(VE^{2}) $ & 38 & 5.90 \\
+ 3 &  $ q\,=\,\tfrac{1}{2}\,\rho\,v^{2} $ & 47 & 5.50 \\
+ 4 &  $ P=wc^{2}\rho $ & 34 & 4.98 \\
 \end{tabular}
 \end{center}
 
 \begin{center}
-\begin{tabular}{lcc}
-Suggesions $\backslash$ Query  & $ax^2 + $ & Frequency\\
+\begin{tabular}{lccc}
+Suggesions $\backslash$ Query  & $ ax^2 + $ & Frequency & Score \\
 \hline
- 1 &  $  ... \tfrac{1}{2}\left(\dot{x}\right)^{2}+\tfrac{1}{2}\alpha x^{2}+\tfrac{1}{4}\beta x^{4}=H $
-   & 305 \\
- 2 &  $  |f(z)|(dx^{2}+dy^{2})  $
-   & 182 \\
- 3 &  $  O(m\times n+n^{2}\times log(n))  $
-   & 74 \\
+ 1 &  $ ax^{2}+bx+c=0 $ & 19 & 1.86 \\
+ 2 &  $ y=ax^{2}+bx+c\, $ & 38 & 1.57 \\
+ 3 &  $ \ p(x)=ax^{2}+bx+c $ & 14 & 1.17 \\
+ 4 &  $ ax^{2}+bx=c $ & 6 & 0.71 \\
 \end{tabular}
 \end{center}
 
 \begin{center}
-\begin{tabular}{lcc}
-Suggesions $\backslash$ Query  & $ax^2 +b $ & Frequency\\
+\begin{tabular}{lccc}
+Suggesions $\backslash$ Query  & $ ax^2 + b $ & Frequency & Score \\
 \hline
- 1 &  $ 2y^{2}(x^{2}+y^{2})-2by^{2}(x+y)+(b^{2}-3a^{2})y^{2}- ...$
-   & 42 \\
- 2 &  $ \alpha^{6}+\alpha^{3}=(\alpha^{2}+\alpha)+(\alpha^{2}+1)=\alpha+1=\alpha^{5} $
-   & 32 \\
- 3 &  $  ax^{2}+bx+c=0   $
-   & 23 \\
- 4 &  $  ax^{2}+bx+c   $
-   & 20 \\
+ 1 &  $ ax^{2}+bx+c=0 $ & 19 & 2.23 \\
+ 2 &  $ y=ax^{2}+bx+c $ & 16 & 1.88 \\
+ 3 &  $ \ p(x)=ax^{2}+bx+c $ & 14 & 1.37 \\
+ 4 &  $ a+b\alpha+c\alpha^{2}, $ & 5 & 0.62 \\
+ 5 &  $ \sqrt{a+bz+cz^{2}} $ & 4 & 0.52 \\
 \end{tabular}
 \end{center}
 
-\section*{Pseudo-code for the auto-completion algorithm}
-See previous report.
+\pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{Thoughts on the absence of logs}
-Query log may be well stimulated by the posted questions on Math Q\&A data such as posts from Math StackExchange.
+\subsection{Query $(1+ \frac 1 n)^n$}
 
-There are two reasons, first is common equation is more likely to be appeared in question post (tagged duplicate question) than in Wikipedia page.
-Second is, the lower math knowledge level of these question, the more common-sense popularity it may represent.
+\begin{center}
+\begin{tabular}{lccc}
+Suggesions $\backslash$ Query  & $ 1+ $ & Frequency & Score \\
+\hline
+ 1 &  $ \displaystyle a_{n+1} $ & 319 & 39.91 \\
+ 2 &  $ (y+1) $ & 95 & 18.68 \\
+ 3 &  $ N=M+1\, $ & 59 & 8.71 \\
+ 4 &  $ m=+1 $ & 44 & 8.65 \\
+ 5 &  $ F(n+1) $ & 51 & 6.38 \\
+\end{tabular}
+\end{center}
 
-\section*{Notes on the current collaboration with PennState}
-OPT based approach may need to address the possible problem that incomplete latex string such as "\textbackslash frac\{" will not be handled by our semantic approach thus no suggestions will be shown, so in this case we may want to experience/research linear prefix match as alternative fallback, Shaurya's first idea is also using prefix tree, but elastic search already has provided functionality for prefix-matching (using FSA), so I suggest maybe to experience linear prefix match, the quick way is utilize Elastic and see some results, before implementing from scratch.
-However, implementing a Trie that exists in memory is easy but it is tricky to implement a Trie that can be saved onto disk, we do not want to reindex everything every time the search engine restarts.
+\begin{center}
+\begin{tabular}{lccc}
+Suggesions $\backslash$ Query  & $ 1+\frac 1 n $ & Frequency & Score \\
+\hline
+ 1 &  $ 1+\frac{1}{\varphi}=\varphi $ & 4 & 0.78 \\
+ 2 &  $ \frac{1}{r}+\frac{1}{p}=1+\frac{1}{s} $ & 3 & 0.29 \\
+ 3 &  $ e=\lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n}. $ & 6 & 0.27 \\
+ 5 &  $ \frac{n+1}{n}=1+\frac{1}{n} $ & 2 & 0.24 \\
+\end{tabular}
+\end{center}
 
-Our week plan is I try to index a large data set, see how well the suggestions look like.
-On Shaurya's side, he may want to read A0 docs and get familiar with math search data structure. Also he want to either implement Trie-like structure or use Elastic for linear autocompletion.
+\begin{center}
+\begin{tabular}{lccc}
+Suggesions $\backslash$ Query  & $ (1+\frac 1 n) $ & Frequency & Score \\
+\hline
+ 1 &  $ e=\lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n}. $ & 6 & 0.32 \\
+ 2 &  $ (1+1/n)^{n} $ & 2 & 0.31 \\
+ 3 &  $  \lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n} $ & 4 & 0.29 \\
+ 4 &  $ P(1+1/{\epsilon})=MC $ & 2 & 0.21 \\
+ 5 &  $ (1+1/n)r $ & 1 & 0.20 \\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{lccc}
+Suggesions $\backslash$ Query  & $ (1+\frac 1 n)^n $ & Frequency & Score \\
+\hline
+ 1 &  $ e=\lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n}. $ & 6 & 0.53 \\
+ 2 &  $  \lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n} $ & 4 & 0.47 \\
+ 3 &  $ \lim_{x\to+\infty}\left(1+\frac{1}{x}\right)^{x}=e $ & 1 & 0.09 \\
+ 4 &  $ \lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n}, $ & 1 & 0.08 \\
+ 5 &  $ \left(1+\frac{1}{x}\right)^{x}<e<\left(1+\frac{1}{x}\right)^{x+1} $ & 1 & 0.07 \\
+\end{tabular}
+\end{center}
+
+\pagebreak
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Current problem}
+Mainly the index time is too long, I put a limit to the maximum number of document and directories to be read per query.
+But I have not tested the new index time yet.
+
 \end{document}

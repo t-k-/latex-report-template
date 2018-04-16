@@ -38,7 +38,7 @@
 
 \usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
 
-\linespread{1.2} % Line spacing
+\linespread{1.0} % Line spacing
 
 %\setlength\parindent{0pt} % Uncomment to remove all indentation from paragraphs
 
@@ -46,225 +46,86 @@
 
 \begin{document}
 
-\title{Autocompletion on Wikipedia corpus (Second Try)}
+\title{Independent Study Report}
 \author{Wei Zhong}
+\date{}
+
 \maketitle
 
-Last time we identify the following major defects:
-\begin{itemize}
-\item No symbol-wise similarity, this tends to allow many semantically different expressions being represented by the first-appear one which may not be an intuitive results.
-\item Only taking into account the frequency, and the frequency does not reflect popularity due to lack of query log and also the above point.
-\item No structure similarity, a simple query may suggest a very complex and large expression.
-\item Lack the definition for ``unique expression''.
-\end{itemize}
+\section{Related Work}
 
-To address the above issues, first I propose a definition to distinguish ``unique expressions''.
-Basically it performs a search on existing index, and use the Approach0 similarity measurement (including structural and symbolic similarity)
-to test the uniqueness of a expression with all relevant expressions in existing index.
+\subsection{Text query auto completion}
+\cite{cai_survey_2016}
+\cite{di_santo_comparing_2015}
+give a good summary on different auto-completion methods and their relevance
+performance.
+\cite{di_santo_comparing_2015} focuses on ranking approaches for query suggestion.
+Methods can be divided into popularity-based, time-based and similarity-based.
+Popularity-based methods use the frequency of query candidates past popularity (MPC as referred by Bar-Yossef), or the document frequency of candidate query (Sentence occurrence) in the literature or
+query log. Term occurrence ranker (TO) introduces TF-IDF and combine it with term popularity.
+Time-based approaches base on session information, in time ranker (TR), ranker scores by the time elapsed from the most recent past occurrence in query log. Most-popular time ranker (MT) combines popularity with MT.
+Lastly, similarity-based methods weight query candidate by their similarity to user query log or the documents user previously clicked. The similarity can be measured by proximity (e.g. Near words), string similarity, or context similarity (e.g. N-Gram similarity, semantic similarity).
+For example, \cite{schmidt_context_sensitive_2016} uses entity to restrict suggestion results in a given category specified by user. 
+And in \cite{mitra_exploring_2015}, Convolutional Latent Semantic Model is applied for query reformulations similarity by offset of vector.
+They train the data based on succession query pair in user session in addition to clickthrough data,
+to infer more contextually relevant query suggestions.
+They found context similarity is good at understanding the actual user intent when only a few characters have been entered in which case MPC will perform poorly.
+Reportedly, models trained on session pairs perform better than those trained on clickthrough data, and supervised learning-to-rank models perform better than
+those trained with similarity features alone.
+Search context can also be used to personalize query auto completion, this involves aggregating list of query logs in order to compare their hybrid similarity to search context.
 
-The uniqueness is the inverse of highest similarity score (scaled from 0 to 1) between query and all relevant expressions.
-Given a threshold value (currently 0.9), if any indexed expression has a similarity score larger than the threshold, it is treated as identical expressions, and the frequency will
-increase onto the expression ID which represents the unique expressions.
-Otherwise, it is an unique expression, and will be indexed with a separate expression ID with an initial frequency equals to one.
+Survey \cite{cai_survey_2016} names alternative two broad categories: Heuristic models and learning based models, depending on applying machine learning method or not.
+The heuristic models are further divided into time-sensitive (e.g. MPC variances), and user-centered (e.g. personalization using session context~\cite{schmidt_context_sensitive_2016}).
+For example, user's implicit negative feedback such as skipped query completion, eye contact can also be used as feedback.
+Learning based models have adopted many features to evaluate suggestions, Likelihood ratio (LLR) and query relatedness are used in \cite{chien_semantic_2005} which captures a pair of query correlation based on their popularity behavior over time. Other learning features include user log features~\cite{kharitonov_user_2013}, query entity discover~\cite{guo_named_2009}, demographic-based features~\cite{shokouhi_learning_2013}, etc.
+\cite{kharitonov_user_2013} learns model from query log of Yandex,
+it defines a query-term graph to model likelihood of a sequence of query prefix. Their
+method is basically searching in the graph the continuing paths with product of
+the probabilities of their edges are among the N highest, the procedure is able to
+prune candidate whose maximum probability is lower than the current candidate
+by depth-first search.
+The survey also relates the subtle differences between query suggestion, query expansion and query correction.
 
-The downside of measuring uniqueness by a thorough search per indexing expression is that it largely increases index time, on my machine, it takes more than 3 hours to index the Wiki dataset.
+\subsection{Evaluations}
+Cai et al. \cite{cai_survey_2016} covers evaluation for query auto completion extensively.
+It identifies three major query logs (AOL, MSN and SogouQ) used in query autocompletion training/evaluation.
+As for evaluation metrics, 
+it is acknowledged in \cite{bhatia_query_2011} that precision is much more important metric than recall as the number of suggestions can be offered is often very limited in space.
+Transitional retrieval evaluation metrics, such as MAP (Mean Average Precision), success rate at top-K (SR@K) and nDCG/$\alpha-$nDCG are also used to assess suggestion quality for diversified query autocompletion systems~\cite{cai_survey_2016}.
+Among these metrics, according to the survey, MRR is used widely as ``standard measurement'' where the rank of final query submitted by user (target query) is used to value query suggestions.
+Various forms of reciprocal rank are used, for example, \cite{bar-yossef_context-sensitive_2011} uses session log, the quality of suggestion is determined by reciprocal rank
+of the user query, weighted by the number of completions given for a prefix. This addresses the different difficulty from completing different prefix (e.g. "prefix starting from z versus starting from c").
+\cite{kharitonov_user_2013} tries to propose a specific evaluation model for query autocompletion, it combines a user behaviour graph model and their key presses effort, their metrics can reflect user behaviour better on long queries.
+query clarity score  \cite{bhatia_query_2011, predicting_2002}, it increases as adding more specific terms that reduce query ambiguity.
 
-On the other hand, at query time, the new version not only takes into account frequency, but also include symbol-wise/structure similarity, search level (corresponding to the nested level
-of a sub-expression match).
-The formula for scoring suggestions after several rounds of tuning is,
-$$
-\text{score} = \frac{s \cdot f \cdot l }{1 + l \cdot \log(1 + l)}
-$$
-where $s$ is scaled similarity score produced by original  Approach0 similarity measurement (including structural and symbolic similarity),
-$l$ is search level and $f$ is the frequency of that unique expression.
-
-The basic idea for this scoring formula is that we want to penalize search depth (so that we tend to avoid huge suggestion expression) but this penalty should not be too much and we may combine the frequency and search depth together, since a large but good suggestion (popular) can save user more typing. So it only uses a log level penalty factor at denominator while also multiplying the frequency at nominator. Furthermore, it adds structure and symbol similarity awareness by introducing $s$ onto nominator.
-
-During implementation, I also spot a query script bug which explains why last time we get many structurally irrelevant result.
-When query JSON is sent to qac daemon, the query script does not strip the document identifier (e.g. "2D\_computer\_graphics:0) so that the identifier is treated as part of LaTeX string.
-See the following commit for the bug fix:
-\url{https://github.com/approach0/search-engine/commit/dbbafb19232186efb25b5b509ff0e1ed4babb7fe#diff-48e4aa3dec7962c5ee797ddb21e8e22d}
-
-\pagebreak
-The concluded algorithm pseudo code is shown below:
-\vspace{2cm}
-
-\begin{lstlisting}
-Function index(tex)
-    result := math_expr_search(tex);
-    if result is not empty:
-        threshold := MAX_MATH_EXPR_SIM_SCALE * 0.9
-        for r in result:
-            if r.score > threshold:
-                key_value_db[r.exprID].freq += 1
-    else:
-        operator_tree := parse(tex)
-        if no parser error reported:
-            cur_len := len(key_value_db)
-            new_exprID := cur_len + 1
-            key_value_db[new_exprID].freq := 1
-            Index math expression by operator_tree
-
-Function search(tex)
-    result := math_expr_search(tex);
-    for each result f := key_value_db[new_exprID].freq
-    rank result by scoring formula $\frac{s \cdot f \cdot l }{1 + l \cdot \log(1 + l)}$
-\end{lstlisting}
-
-\pagebreak
-\section*{Generated example}
-
-\subsection{Query $x^2+y$}
-\begin{center}
-\begin{tabular}{lccc}
-Suggesions $\backslash$ Query  & $x^2 $ & Frequency & Score \\
-\hline
- 1 &  $ O(R^{2})\,\! $ & 302 & 46.85 \\
- 2 &  $ r^{2}m $ & 165 & 32.26 \\
- 3 &  $ q\sim p^{2} $ & 131 & 25.61 \\
- 4 &  $ f^{2}(\theta) $ & 84 & 16.42 \\
-\end{tabular}
-\end{center}
-
-\begin{center}
-\begin{tabular}{lccc}
-Suggesions $\backslash$ Query  & $x^2+ $ & Frequency & Score \\
-\hline
- 1 &  $ x^{2}+y^{2}=r^{2}.\! $ & 100 & 9.80 \\
- 2 &  $ \scriptstyle r=\sqrt{a^{2}+b^{2}} $ & 44 & 3.63 \\
- 3 &  $ x^{2}+y^{2}=1 $ & 25 & 2.95 \\
- 4 &  $ \sqrt{a^{2}+b^{2}} $ & 19 & 2.37 \\
-\end{tabular}
-\end{center}
+The other direction is assessing the efforts saved to help user complete target query. 
+MKS (Minimal Keystrokes) by \cite{duan_online_2011}
+is used in query suggestion system evaluations~\cite{kharitonov_user_2013}, although it is initially proposed to evaluate the query misspelling correction algorithm.
 
 
-\begin{center}
-\begin{tabular}{lccc}
-Suggesions $\backslash$ Query  & $x^2 + y$ & Frequency & Score \\
-\hline
- 1 &  $ f(x)=x^{3}+x $ & 11 & 1.61 \\
- 2 &  $ x^{2}+px+q=0 $ & 12 & 1.41 \\
- 3 &  $ f_{c}(z)=z^{2}+c $ & 9 & 1.05 \\
- 4 &  $ z\mapsto\bar{z}^{2}+c\,. $ & 5 & 0.98 \\
-\end{tabular}
-\end{center}
 
-\pagebreak
-%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Text QAC Problems}
+Unseen prefixes is one common issue in text query auto completion.
+In typical query auto-completion systems, candidate query are generated from prefix lookup against candidate query set (e.g. query log), however, these systems
+ can only recommend queries for prefixes that have been previously seen by the search engine with adequate frequency.
+\cite{mitra_query_2015} explores the idea to use suffixes that are popular n-grams and append it to current query prefix.
+Their experiment shows, compared to baseline setting in, their model is as good as MPC for previously seen queries and outperform MPC by 43\% in MRR for previously unseen queries.
+\cite{park_neural_2017} proposes a language model that employs  recurrent neural network to resolve the dimensionality problem with a distributed representation of text.
+It shows this can boost the query suggestion for both seen and unseen prefixes.
+This study, unlike term-level query auto completion in \cite{vargas_term-by-term_2016}, can handle Out-of-Vocabulary words because of character-level query completion.
+On the other hand, for many popularity based methods, the models assume the current query popularity distribution will remain the same as that previously observed but this is not suitable for time-sensitive changes such as breaking news topic. This is addressed by only take a window size of past query log evidence to improve temporal sensitivity of popularity based methods~\cite{cai_survey_2016}.
+Another approach to address time temporal issue is using time-series analysis, and put emphasis on ``trending'' keywords~\cite{shokouhi_detecting_2011}.
+Research in this direction tries to detect ``bursts'' in query frequencies of recent query log.
 
-\subsection{Query $ax^2+b$}
+\subsection{Math formula autocompletion}
+Math formula autocompletion is a new research domain, to my best knowledge, there is no paper published in this particular area. 
+Popular math search system WolframAlpha supports math expression autocompletion, although their system is closed, we can observe the query candidates is filtered by matching string prefix of math expressions. 
+Thus, math expressions with commutative operator or using a different set of symbols will not show up as suggestions.
+We argue that math formula autocompletion should be aware of the unique characters of math expression such as community, associativity, sub-expression similarity (one expression is relevant to the other by being a subexpression, and a subexpression can match any place in the middle, not necessarily match the prefix) and symbol set unification (symbols can be used interchangeably across similar math expressions).
+Given these, the uniqueness of math expression remains to be defined in the query autocompletion context, since math expressions with same meaning may have different string representations. Otherwise the MPC method used in normal text completion cannot simply be applied in math query autocompletion.
 
-\begin{center}
-\begin{tabular}{lccc}
-Suggesions $\backslash$ Query  & $ ax $ & Frequency & Score \\
-\hline
- 1 &  $ d_{BO}\!\,- $ & 2667 & 412.08 \\
- 2 &  $ \mathbf{F}=m\mathbf{g} $ & 1287 & 250.84 \\
- 3 &  $ x_{\mathrm{new}} $ & 829 & 102.68 \\
- 4 &  $ b^{th} $ & 521 & 80.50 \\
-\end{tabular}
-\end{center}
+Dealing with math formula autocompletion may need to use existing math formula search engines or utilize some graph-based database (such as Neo4j) to identify the unique math expressions/subexpressions and retrieve similar math expressions by subexpressions (rather than using string prefix/suffix).
 
-\begin{center}
-\begin{tabular}{lccc}
-Suggesions $\backslash$ Query  & $ ax^2 $ & Frequency & Score \\
-\hline
- 1 &  $ I=r^{2}m $ & 96 & 18.77 \\
- 2 &  $ O(VE^{2}) $ & 38 & 5.90 \\
- 3 &  $ q\,=\,\tfrac{1}{2}\,\rho\,v^{2} $ & 47 & 5.50 \\
- 4 &  $ P=wc^{2}\rho $ & 34 & 4.98 \\
-\end{tabular}
-\end{center}
-
-\begin{center}
-\begin{tabular}{lccc}
-Suggesions $\backslash$ Query  & $ ax^2 + $ & Frequency & Score \\
-\hline
- 1 &  $ ax^{2}+bx+c=0 $ & 19 & 1.86 \\
- 2 &  $ y=ax^{2}+bx+c\, $ & 38 & 1.57 \\
- 3 &  $ \ p(x)=ax^{2}+bx+c $ & 14 & 1.17 \\
- 4 &  $ ax^{2}+bx=c $ & 6 & 0.71 \\
-\end{tabular}
-\end{center}
-
-\begin{center}
-\begin{tabular}{lccc}
-Suggesions $\backslash$ Query  & $ ax^2 + b $ & Frequency & Score \\
-\hline
- 1 &  $ ax^{2}+bx+c=0 $ & 19 & 2.23 \\
- 2 &  $ y=ax^{2}+bx+c $ & 16 & 1.88 \\
- 3 &  $ \ p(x)=ax^{2}+bx+c $ & 14 & 1.37 \\
- 4 &  $ a+b\alpha+c\alpha^{2}, $ & 5 & 0.62 \\
- 5 &  $ \sqrt{a+bz+cz^{2}} $ & 4 & 0.52 \\
-\end{tabular}
-\end{center}
-
-\pagebreak
-%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Query $(1+ \frac 1 n)^n$}
-
-\begin{center}
-\begin{tabular}{lccc}
-Suggesions $\backslash$ Query  & $ 1+ $ & Frequency & Score \\
-\hline
- 1 &  $ \displaystyle a_{n+1} $ & 319 & 39.91 \\
- 2 &  $ (y+1) $ & 95 & 18.68 \\
- 3 &  $ N=M+1\, $ & 59 & 8.71 \\
- 4 &  $ m=+1 $ & 44 & 8.65 \\
- 5 &  $ F(n+1) $ & 51 & 6.38 \\
-\end{tabular}
-\end{center}
-
-\begin{center}
-\begin{tabular}{lccc}
-Suggesions $\backslash$ Query  & $ 1+\frac 1 n $ & Frequency & Score \\
-\hline
- 1 &  $ 1+\frac{1}{\varphi}=\varphi $ & 4 & 0.78 \\
- 2 &  $ \frac{1}{r}+\frac{1}{p}=1+\frac{1}{s} $ & 3 & 0.29 \\
- 3 &  $ e=\lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n}. $ & 6 & 0.27 \\
- 5 &  $ \frac{n+1}{n}=1+\frac{1}{n} $ & 2 & 0.24 \\
-\end{tabular}
-\end{center}
-
-\begin{center}
-\begin{tabular}{lccc}
-Suggesions $\backslash$ Query  & $ (1+\frac 1 n) $ & Frequency & Score \\
-\hline
- 1 &  $ e=\lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n}. $ & 6 & 0.32 \\
- 2 &  $ (1+1/n)^{n} $ & 2 & 0.31 \\
- 3 &  $  \lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n} $ & 4 & 0.29 \\
- 4 &  $ P(1+1/{\epsilon})=MC $ & 2 & 0.21 \\
- 5 &  $ (1+1/n)r $ & 1 & 0.20 \\
-\end{tabular}
-\end{center}
-
-\begin{center}
-\begin{tabular}{lccc}
-Suggesions $\backslash$ Query  & $ (1+\frac 1 n)^n $ & Frequency & Score \\
-\hline
- 1 &  $ e=\lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n}. $ & 6 & 0.53 \\
- 2 &  $  \lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n} $ & 4 & 0.47 \\
- 3 &  $ \lim_{x\to+\infty}\left(1+\frac{1}{x}\right)^{x}=e $ & 1 & 0.09 \\
- 4 &  $ \lim_{n\to\infty}\left(1+\frac{1}{n}\right)^{n}, $ & 1 & 0.08 \\
- 5 &  $ \left(1+\frac{1}{x}\right)^{x}<e<\left(1+\frac{1}{x}\right)^{x+1} $ & 1 & 0.07 \\
-\end{tabular}
-\end{center}
-
-\pagebreak
-%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section*{Current problem}
-Mainly the index time is too long, I put a limit to the maximum number of document and directories to be read per query.
-But I have not tested the new index time yet.
-
+\bibliography{main}{}
+\bibliographystyle{plain}
 \end{document}

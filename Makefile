@@ -1,8 +1,8 @@
-main.pdf: main.tex
+main.pdf: main.tex main.bib
 	xelatex -halt-on-error main
-	#bibtex  main > /dev/null
-	#xelatex -halt-on-error main > /dev/null
-	#xelatex -halt-on-error main > /dev/null
+	bibtex  main > /dev/null
+	xelatex -halt-on-error main > /dev/null
+	xelatex -halt-on-error main > /dev/null
 
 clean:
 	rm -f *.pdf

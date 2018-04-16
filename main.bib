@@ -1,0 +1,366 @@
+@inproceedings{di_santo_comparing_2015,
+	address = {New York, NY, USA},
+	series = {{SIGIR} '15},
+	title = {Comparing {Approaches} for {Query} {Autocompletion}},
+	isbn = {978-1-4503-3621-5},
+	url = {http://doi.acm.org/10.1145/2766462.2767829},
+	doi = {10.1145/2766462.2767829},
+	abstract = {},
+	urldate = {2018-01-23},
+	booktitle = {Proceedings of the 38th {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Di Santo, Giovanni and McCreadie, Richard and Macdonald, Craig and Ounis, Iadh},
+	year = {2015},
+	keywords = {information retrieval, query completion},
+	pages = {775--778},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/GHZHC4II/Di Santo et al. - 2015 - Comparing Approaches for Query Autocompletion.pdf:application/pdf}
+}
+
+
+@book{cai_survey_2016,
+	address = {Hanover, MA, USA},
+	title = {A {Survey} of {Query} {Auto} {Completion} in {Information} {Retrieval}},
+	isbn = {978-1-68083-200-6},
+	abstract = {In information retrieval, query auto completion (QAC), also known as type-ahead and auto-complete suggestion, refers to the following functionality: given a prex consisting of a number of characters entered into a search box, the user interface proposes alternative ways of extending the prex to a full query. QAC helps users to formulate their query when they have an intent in mind but not a clear way of expressing this in a query. It helps to avoid possible spelling mistakes, especially on devices with small screens. It saves keystrokes and cuts down the search duration of users which implies a lower load on the search engine, and results in savings in machine resources and maintenance. Because of the clear benets of QAC, a considerable number of algorithmic approaches to QAC have been proposed in the past few years. Query logs have proven to be a key asset underlying most of the recent research. This monograph surveys this research. It focuses on summarizing the literature on QAC and provides a general understanding of the wealth of QAC approaches that are currently available. A Survey of Query Auto Completion in Information Retrieval is an ideal reference on the topic. Its contributions can be summarized as follows: It provides researchers who are working on query auto completion or related problems in the eld of information retrieval with a good overview and analysis of state-of-the-art QAC approaches. In particular, for researchers new to the eld, the survey can serve as an introduction to the state-of-the-art. It also offers a comprehensive perspective on QAC approaches by presenting a taxonomy of existing solutions. In addition, it presents solutions for QAC under different conditions such as available high-resolution query logs, in-depth user interactions with QAC using eye-tracking, and elaborate user engagements in a QAC process. It also discusses practical issues related to QAC. Lastly, it presents a detailed discussion of core challenges and promising open directions in QAC.},
+	publisher = {Now Publishers Inc.},
+	author = {Cai, Fei and de Rijke, Maarten},
+	year = {2016},
+	annote = {Good survey book.
+
+QAC benefits.
+
+It focuses on summarizing the literature on QAC and provides a general understanding of the wealth of QAC approaches that are currently available.
+
+Divide methods into:
+Heuristic approaches and Learning-based approaches
+ },
+	file = {cai-survey-2016.pdf:/home/tk/Zotero/storage/MVN6HXI4/cai-survey-2016.pdf:application/pdf}
+}
+
+@inproceedings{park_neural_2017,
+	address = {New York, NY, USA},
+	series = {{SIGIR} '17},
+	title = {A {Neural} {Language} {Model} for {Query} {Auto}-{Completion}},
+	isbn = {978-1-4503-5022-8},
+	url = {http://doi.acm.org/10.1145/3077136.3080758},
+	doi = {10.1145/3077136.3080758},
+	abstract = {Query auto-completion (QAC) systems suggest queries that complete a user's text as the user types each character. Such queries are typically selected among previously stored queries, based on specific attributes such as popularity. However, queries cannot be suggested if a user's text does not match any queries in the storage. In order to suggest queries for previously unseen text, we propose a neural language model that learns how to generate a query from a starting text, a prefix. Specifically, we employ a recurrent neural network to handle prefixes in variable length. We perform the first neural language model experiments for QAC, and we evaluate the proposed methods with a public data set. Empirical results show that the proposed methods are as effective as traditional methods for previously seen queries and are superior to the state-of-the-art QAC method for previously unseen queries.},
+	urldate = {2018-04-16},
+	booktitle = {Proceedings of the 40th {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Park, Dae Hoon and Chiba, Rikio},
+	year = {2017},
+	keywords = {neural language model, query auto-completion, recurrent neural network},
+	pages = {1189--1192},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/V7GI9QE4/Park and Chiba - 2017 - A Neural Language Model for Query Auto-Completion.pdf:application/pdf}
+}
+
+@inproceedings{schmidt_context_sensitive_2016,
+	address = {Pisa, Italy},
+	series = {{SIGIR} '16},
+	title = {Context-{Sensitive} {Auto}-{Completion} for {Searching} with {Entities} and {Categories}},
+	isbn = {978-1-4503-4069-4},
+	url = {http://doi.acm.org/10.1145/2911451.2911461},
+	doi = {10.1145/2911451.2911461},
+	abstract = {When searching in a document collection by keywords, good auto-completion suggestions can be derived from query logs and corpus statistics. On the other hand, when querying documents which have automatically been linked to entities and semantic categories, auto-completion has not been investigated much. We have developed a semantic auto-completion system, where suggestions for entities and categories are computed in real-time from the context of already entered entities or categories and from entity-level co-occurrence statistics for the underlying corpus. Given the huge size of the knowledge bases that underlie this setting, a challenge is to compute the best suggestions fast enough for interactive user experience. Our demonstration shows the effectiveness of our method, and its interactive usability.},
+	booktitle = {Proceedings of the 39th {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Schmidt, Andreas and Hoffart, Johannes and Milchevski, Dragan and Weikum, Gerhard},
+	year = {2016},
+	keywords = {categories, context adaptive, corpus adaptive, entities, semantic-auto-completion},
+	pages = {1097--1100},
+	annote = {1. context-sensitivity at entities level.
+2. corpus-adaptivity (instead of linking to KB such as Wiki, it is based on the importance in the underlying document collection)
+
+the ranking should reflect the incremental nature of the user’s input: after the first entity is chosen, the suggestions for the second one should be sensitive to this context.
+
+A good reference for entity search and entity recommendation.
+ },
+	file = {Schmidt et al. - 2016 - Context-Sensitive Auto-Completion for Searching wi.pdf:/home/tk/Zotero/storage/FNRJ5QTD/Schmidt et al. - 2016 - Context-Sensitive Auto-Completion for Searching wi.pdf:application/pdf}
+}
+
+
+@inproceedings{shokouhi_detecting_2011,
+	address = {New York, NY, USA},
+	series = {{SIGIR} '11},
+	title = {Detecting {Seasonal} {Queries} by {Time}-series {Analysis}},
+	isbn = {978-1-4503-0757-4},
+	url = {http://doi.acm.org/10.1145/2009916.2010104},
+	doi = {10.1145/2009916.2010104},
+	abstract = {Seasonal events such as Halloween and Christmas repeat every year and initiate several temporal information needs. The impact of such events on users is often reflected in search logs in form of seasonal spikes in the frequency of related queries (e.g. "halloween costumes", "where is santa"). Many seasonal queries such as "sigir conference" mainly target fresh pages (e.g. sigir2011.org) that have less usage data such as clicks and anchor-text compared to older alternatives (e.g.sigir2009.org). Thus, it is important for search engines to correctly identify seasonal queries and make sure that their results are temporally reordered if necessary. In this poster, we focus on detecting seasonal queries using time-series analysis. We demonstrate that the seasonality of a query can be determined with high accuracy according to its historical frequency distribution.},
+	urldate = {2018-04-16},
+	booktitle = {Proceedings of the 34th {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Shokouhi, Milad},
+	year = {2011},
+	keywords = {seasonal query classification, temporal queries},
+	pages = {1171--1172},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/7YLSPHGC/Shokouhi - 2011 - Detecting Seasonal Queries by Time-series Analysis.pdf:application/pdf}
+}
+
+
+@inproceedings{chien_semantic_2005,
+	address = {New York, NY, USA},
+	series = {{WWW} '05},
+	title = {Semantic {Similarity} {Between} {Search} {Engine} {Queries} {Using} {Temporal} {Correlation}},
+	isbn = {978-1-59593-046-0},
+	url = {http://doi.acm.org/10.1145/1060745.1060752},
+	doi = {10.1145/1060745.1060752},
+	abstract = {We investigate the idea of finding semantically related search engine queries based on their temporal correlation; in other words, we infer that two queries are related if their popularities behave similarly over time. To this end, we first define a new measure of the temporal correlation of two queries based on the correlation coefficient of their frequency functions. We then conduct extensive experiments using our measure on two massive query streams from the MSN search engine, revealing that this technique can discover a wide range of semantically similar queries. Finally, we develop a method of efficiently finding the highest correlated queries for a given input query using far less space and time than the naive approach, making real-time implementation possible.},
+	urldate = {2018-04-16},
+	booktitle = {Proceedings of the 14th {International} {Conference} on {World} {Wide} {Web}},
+	publisher = {ACM},
+	author = {Chien, Steve and Immorlica, Nicole},
+	year = {2005},
+	keywords = {query stream analysis, search engines, semantic similarity among queries},
+	pages = {2--11},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/XF6TMYKJ/Chien and Immorlica - 2005 - Semantic Similarity Between Search Engine Queries .pdf:application/pdf}
+}
+
+
+@inproceedings{guo_named_2009,
+	address = {New York, NY, USA},
+	series = {{SIGIR} '09},
+	title = {Named {Entity} {Recognition} in {Query}},
+	isbn = {978-1-60558-483-6},
+	url = {http://doi.acm.org/10.1145/1571941.1571989},
+	doi = {10.1145/1571941.1571989},
+	abstract = {This paper addresses the problem of Named Entity Recognition in Query (NERQ), which involves detection of the named entity in a given query and classification of the named entity into predefined classes. NERQ is potentially useful in many applications in web search. The paper proposes taking a probabilistic approach to the task using query log data and Latent Dirichlet Allocation. We consider contexts of a named entity (i.e., the remainders of the named entity in queries) as words of a document, and classes of the named entity as topics. The topic model is constructed by a novel and general learning method referred to as WS-LDA (Weakly Supervised Latent Dirichlet Allocation), which employs weakly supervised learning (rather than unsupervised learning) using partially labeled seed entities. Experimental results show that the proposed method based on WS-LDA can accurately perform NERQ, and outperform the baseline methods.},
+	urldate = {2018-04-16},
+	booktitle = {Proceedings of the 32Nd {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Guo, Jiafeng and Xu, Gu and Cheng, Xueqi and Li, Hang},
+	year = {2009},
+	keywords = {named entity recognition, topic model},
+	pages = {267--274},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/P95NH6NJ/Guo et al. - 2009 - Named Entity Recognition in Query.pdf:application/pdf}
+}
+
+
+@inproceedings{vargas_term-by-term_2016,
+	address = {New York, NY, USA},
+	series = {{WSDM} '16},
+	title = {Term-by-{Term} {Query} {Auto}-{Completion} for {Mobile} {Search}},
+	isbn = {978-1-4503-3716-8},
+	url = {http://doi.acm.org/10.1145/2835776.2835813},
+	doi = {10.1145/2835776.2835813},
+	abstract = {With the ever increasing usage of mobile search, where text input is typically slow and error-prone, assisting users to formulate their queries contributes to a more satisfactory search experience. Query auto-completion (QAC) techniques, which predict possible completions for user queries, are the archetypal example of query assistance and are present in most search engines. We argue, however, that classic QAC, which operates by suggesting whole-query completions, may be sub-optimal for the case of mobile search as the available screen real estate to show suggestions is limited and editing is typically slower than in desktop search. In this paper we propose the idea of term-by-term QAC, which is a new technique inspired by predictive keyboards that suggests to the user one term at a time, instead of whole-query completions. We describe an efficient mechanism to implement this technique and an adaptation of a prior user model to evaluate the effectiveness of both standard and term-by-term QAC approaches using query log data. Our experiments with a mobile query log from a commercial search engine show the validity of our approach according to this user model with respect to saved characters, saved terms and examination effort. Finally, a user study provides further insights about our term-by-term technique compared with standard QAC with respect to the variables analyzed in the query log-based evaluation and additional variables related to the successfulness, the speed of the interactions and the properties of the submitted queries.},
+	urldate = {2018-01-23},
+	booktitle = {Proceedings of the {Ninth} {ACM} {International} {Conference} on {Web} {Search} and {Data} {Mining}},
+	publisher = {ACM},
+	author = {Vargas, Saúl and Blanco, Roi and Mika, Peter},
+	year = {2016},
+	keywords = {user models, query auto completion, query logs, word prediction},
+	pages = {143--152},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/DIU4SLML/Vargas et al. - 2016 - Term-by-Term Query Auto-Completion for Mobile Sear.pdf:application/pdf}
+}
+
+
+@inproceedings{shokouhi_learning_2013,
+	address = {New York, NY, USA},
+	series = {{SIGIR} '13},
+	title = {Learning to {Personalize} {Query} {Auto}-completion},
+	isbn = {978-1-4503-2034-4},
+	url = {http://doi.acm.org/10.1145/2484028.2484076},
+	doi = {10.1145/2484028.2484076},
+	abstract = {Query auto-completion (QAC) is one of the most prominent features of modern search engines. The list of query candidates is generated according to the prefix entered by the user in the search box and is updated on each new key stroke. Query prefixes tend to be short and ambiguous, and existing models mostly rely on the past popularity of matching candidates for ranking. However, the popularity of certain queries may vary drastically across different demographics and users. For instance, while instagram and imdb have comparable popularities overall and are both legitimate candidates to show for prefix i, the former is noticeably more popular among young female users, and the latter is more likely to be issued by men. In this paper, we present a supervised framework for personalizing auto-completion ranking. We introduce a novel labelling strategy for generating offline training labels that can be used for learning personalized rankers. We compare the effectiveness of several user-specific and demographic-based features and show that among them, the user's long-term search history and location are the most effective for personalizing auto-completion rankers. We perform our experiments on the publicly available AOL query logs, and also on the larger-scale logs of Bing. The results suggest that supervised rankers enhanced by personalization features can significantly outperform the existing popularity-based base-lines, in terms of mean reciprocal rank (MRR) by up to 9\%.},
+	urldate = {2018-02-19},
+	booktitle = {Proceedings of the 36th {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Shokouhi, Milad},
+	year = {2013},
+	keywords = {query auto-completion, autosuggest, personalized search},
+	pages = {103--112},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/9WMXLU8I/Shokouhi - 2013 - Learning to Personalize Query Auto-completion.pdf:application/pdf}
+}
+
+
+@inproceedings{mitra_query_2015,
+	address = {New York, NY, USA},
+	series = {{CIKM} '15},
+	title = {Query {Auto}-{Completion} for {Rare} {Prefixes}},
+	isbn = {978-1-4503-3794-6},
+	url = {http://doi.acm.org/10.1145/2806416.2806599},
+	doi = {10.1145/2806416.2806599},
+	abstract = {Query auto-completion (QAC) systems typically suggest queries that have previously been observed in search logs. Given a partial user query, the system looks up this query prefix against a precomputed set of candidates, then orders them using ranking signals such as popularity. Such systems can only recommend queries for prefixes that have been previously seen by the search engine with adequate frequency. They fail to recommend if the prefix is sufficiently rare such that it has no matches in the precomputed candidate set. We propose a design of a QAC system that can suggest completions for rare query prefixes. In particular, we describe a candidate generation approach using frequently observed query suffixes mined from historical search logs. We then describe a supervised model for ranking these synthetic suggestions alongside the traditional full-query candidates. We further explore ranking signals that are appropriate for both types of candidates based on n-gram statistics and a convolutional latent semantic model (CLSM). Within our supervised framework the new features demonstrate significant improvements in performance over the popularity-based baseline. The synthetic query suggestions complement the existing popularity-based approach, helping users formulate rare queries.},
+	urldate = {2018-01-23},
+	booktitle = {Proceedings of the 24th {ACM} {International} on {Conference} on {Information} and {Knowledge} {Management}},
+	publisher = {ACM},
+	author = {Mitra, Bhaskar and Craswell, Nick},
+	year = {2015},
+	keywords = {deep learning, query auto-completion},
+	pages = {1755--1758},
+	annote = {
+Improve systems that can only recommend queries for prefixes that have been previously seen by the search engine with adequate frequency. 
+
+Explore ranking signals that are appropriate for both types of candidates based on n-gram statistics and a convolutional latent semantic model (CLSM). 
+
+We propose an additional candidate generation strategy for QAC
+by mining popular query suffixes. Candidate suffixes are popular
+n-grams that appear at the ends of queries. By appending such
+n-grams suffixes to a user’s query prefix we can generate synthetic
+suggestion candidates that have never been observed in the historical
+query logs. Table 1 contains examples of such suggestions. We
+further propose a supervised framework for ranking these synthetic
+queries alongside the traditional full-query suggestion candidates.
+We also explore new ranking signals in this framework, based on
+the query n-gram statistics and a deep convolutional latent semantic
+model (CLSM)
+
+},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/2KE8SH33/Mitra and Craswell - 2015 - Query Auto-Completion for Rare Prefixes.pdf:application/pdf}
+}
+
+
+@inproceedings{mitra_exploring_2015,
+	address = {New York, NY, USA},
+	series = {{SIGIR} '15},
+	title = {Exploring {Session} {Context} {Using} {Distributed} {Representations} of {Queries} and {Reformulations}},
+	isbn = {978-1-4503-3621-5},
+	url = {http://doi.acm.org/10.1145/2766462.2767702},
+	doi = {10.1145/2766462.2767702},
+	abstract = {Search logs contain examples of frequently occurring patterns of user reformulations of queries. Intuitively, the reformulation "San Francisco" -- "San Francisco 49ers" is semantically similar to "Detroit" -- "Detroit Lions". Likewise, "London" -- "things to do in London" and "New York" -- "New York tourist attractions" can also be considered similar transitions in intent. The reformulation "movies" -- "new movies" and "york" -- "New York", however, are clearly different despite the lexical similarities in the two reformulations. In this paper, we study the distributed representation of queries learnt by deep neural network models, such as the Convolutional Latent Semantic Model, and show that they can be used to represent query reformulations as vectors. These reformulation vectors exhibit favourable properties such as mapping semantically and syntactically similar query changes closer in the embedding space. Our work is motivated by the success of continuous space language models in capturing relationships between words and their meanings using offset vectors. We demonstrate a way to extend the same intuition to represent query reformulations. Furthermore, we show that the distributed representations of queries and reformulations are both useful for modelling session context for query prediction tasks, such as for query auto-completion (QAC) ranking. Our empirical study demonstrates that short-term (session) history context features based on these two representations improves the mean reciprocal rank (MRR) for the QAC ranking task by more than 10\% over a supervised ranker baseline. Our results also show that by using features based on both these representations together we achieve a better performance, than either of them individually.},
+	urldate = {2018-01-23},
+	booktitle = {Proceedings of the 38th {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Mitra, Bhaskar},
+	year = {2015},
+	keywords = {deep learning, query auto-completion, contextual search},
+	pages = {3--12},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/4TLH6C3E/Mitra - 2015 - Exploring Session Context Using Distributed Repres.pdf:application/pdf}
+}
+
+
+@inproceedings{schmidt_context_sensitive_2016,
+	address = {Pisa, Italy},
+	series = {{SIGIR} '16},
+	title = {Context-{Sensitive} {Auto}-{Completion} for {Searching} with {Entities} and {Categories}},
+	isbn = {978-1-4503-4069-4},
+	url = {http://doi.acm.org/10.1145/2911451.2911461},
+	doi = {10.1145/2911451.2911461},
+	abstract = {When searching in a document collection by keywords, good auto-completion suggestions can be derived from query logs and corpus statistics. On the other hand, when querying documents which have automatically been linked to entities and semantic categories, auto-completion has not been investigated much. We have developed a semantic auto-completion system, where suggestions for entities and categories are computed in real-time from the context of already entered entities or categories and from entity-level co-occurrence statistics for the underlying corpus. Given the huge size of the knowledge bases that underlie this setting, a challenge is to compute the best suggestions fast enough for interactive user experience. Our demonstration shows the effectiveness of our method, and its interactive usability.},
+	booktitle = {Proceedings of the 39th {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Schmidt, Andreas and Hoffart, Johannes and Milchevski, Dragan and Weikum, Gerhard},
+	year = {2016},
+	keywords = {categories, context adaptive, corpus adaptive, entities, semantic-auto-completion},
+	pages = {1097--1100},
+	annote = {1. context-sensitivity at entities level.
+2. corpus-adaptivity (instead of linking to KB such as Wiki, it is based on the importance in the underlying document collection)
+
+the ranking should reflect the incremental nature of the user’s input: after the first entity is chosen, the suggestions for the second one should be sensitive to this context.
+
+A good reference for entity search and entity recommendation.
+ },
+	file = {Schmidt et al. - 2016 - Context-Sensitive Auto-Completion for Searching wi.pdf:/home/tk/Zotero/storage/FNRJ5QTD/Schmidt et al. - 2016 - Context-Sensitive Auto-Completion for Searching wi.pdf:application/pdf}
+}
+
+@inproceedings{kharitonov_user_2013,
+	address = {New York, NY, USA},
+	series = {{SIGIR} '13},
+	title = {User {Model}-based {Metrics} for {Offline} {Query} {Suggestion} {Evaluation}},
+	isbn = {978-1-4503-2034-4},
+	url = {http://doi.acm.org/10.1145/2484028.2484041},
+	doi = {10.1145/2484028.2484041},
+	abstract = {Query suggestion or auto-completion mechanisms are widely used by search engines and are increasingly attracting interest from the research community. However, the lack of commonly accepted evaluation methodology and metrics means that it is not possible to compare results and approaches from the literature. Moreover, often the metrics used to evaluate query suggestions tend to be an adaptation from other domains without a proper justification. Hence, it is not necessarily clear if the improvements reported in the literature would result in an actual improvement in the users' experience. Inspired by the cascade user models and state-of-the-art evaluation metrics in the web search domain, we address the query suggestion evaluation, by first studying the users behaviour from a search engine's query log and thereby deriving a new family of user models describing the users interaction with a query suggestion mechanism. Next, assuming a query log-based evaluation approach, we propose two new metrics to evaluate query suggestions, pSaved and eSaved. Both metrics are parameterised by a user model. pSaved is defined as the probability of using the query suggestions while submitting a query. eSaved equates to the expected relative amount of effort (keypresses) a user can avoid due to the deployed query suggestion mechanism. Finally, we experiment with both metrics using four user model instantiations as well as metrics previously used in the literature on a dataset of 6.1M sessions. Our results demonstrate that pSaved and eSaved show the best alignment with the users satisfaction amongst the considered metrics.},
+	urldate = {2018-01-23},
+	booktitle = {Proceedings of the 36th {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Kharitonov, Eugene and Macdonald, Craig and Serdyukov, Pavel and Ounis, Iadh},
+	year = {2013},
+	keywords = {evaluation measures, query suggestions, user models},
+	pages = {633--642},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/WVKVFXU4/Kharitonov et al. - 2013 - User Model-based Metrics for Offline Query Suggest.pdf:application/pdf}
+}
+
+@inproceedings{bhatia_query_2011,
+	address = {New York, NY, USA},
+	series = {{SIGIR} '11},
+	title = {Query {Suggestions} in the {Absence} of {Query} {Logs}},
+	isbn = {978-1-4503-0757-4},
+	url = {http://doi.acm.org/10.1145/2009916.2010023},
+	doi = {10.1145/2009916.2010023},
+	abstract = {After an end-user has partially input a query, intelligent search engines can suggest possible completions of the partial query to help end-users quickly express their information needs. All major web-search engines and most proposed methods that suggest queries rely on search engine query logs to determine possible query suggestions. However, for customized search systems in the enterprise domain, intranet search, or personalized search such as email or desktop search or for infrequent queries, query logs are either not available or the user base and the number of past user queries is too small to learn appropriate models. We propose a probabilistic mechanism for generating query suggestions from the corpus without using query logs. We utilize the document corpus to extract a set of candidate phrases. As soon as a user starts typing a query, phrases that are highly correlated with the partial user query are selected as completions of the partial query and are offered as query suggestions. Our proposed approach is tested on a variety of datasets and is compared with state-of-the-art approaches. The experimental results clearly demonstrate the effectiveness of our approach in suggesting queries with higher quality.},
+	urldate = {2018-01-23},
+	booktitle = {Proceedings of the 34th {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Bhatia, Sumit and Majumdar, Debapriyo and Mitra, Prasenjit},
+	year = {2011},
+	keywords = {query completion, enterprise search, query formulation, query log analysis, query suggestion},
+	pages = {795--804},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/4NT52GQK/Bhatia et al. - 2011 - Query Suggestions in the Absence of Query Logs.pdf:application/pdf}
+}
+
+@inproceedings{predicting_2002,
+	address = {New York, NY, USA},
+	series = {{SIGIR} '02},
+	title = {Predicting {Query} {Performance}},
+	isbn = {978-1-58113-561-9},
+	url = {http://doi.acm.org/10.1145/564376.564429},
+	doi = {10.1145/564376.564429},
+	abstract = {We develop a method for predicting query performance by computing the relative entropy between a query language model and the corresponding collection language model. The resulting clarity score measures the coherence of the language usage in documents whose models are likely to generate the query. We suggest that clarity scores measure the ambiguity of a query with respect to a collection of documents and show that they correlate positively with average precision in a variety of TREC test sets. Thus, the clarity score may be used to identify ineffective queries, on average, without relevance information. We develop an algorithm for automatically setting the clarity score threshold between predicted poorly-performing queries and acceptable queries and validate it using TREC data. In particular, we compare the automatic thresholds to optimum thresholds and also check how frequently results as good are achieved in sampling experiments that randomly assign queries to the two classes.},
+	urldate = {2018-04-16},
+	booktitle = {Proceedings of the 25th {Annual} {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Cronen-Townsend, Steve and Zhou, Yun and Croft, W. Bruce},
+	year = {2002},
+	keywords = {ambiguity, clarity, information theory, language models},
+	pages = {299--306},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/N4DWU7TB/Cronen-Townsend et al. - 2002 - Predicting Query Performance.pdf:application/pdf}
+}
+
+
+@inproceedings{shokouhi_time-sensitive_2012,
+	address = {New York, NY, USA},
+	series = {{SIGIR} '12},
+	title = {Time-sensitive {Query} {Auto}-completion},
+	isbn = {978-1-4503-1472-5},
+	url = {http://doi.acm.org/10.1145/2348283.2348364},
+	doi = {10.1145/2348283.2348364},
+	abstract = {Query auto-completion (QAC) is a common feature in modern search engines. High quality QAC candidates enhance search experience by saving users time that otherwise would be spent on typing each character or word sequentially. Current QAC methods rank suggestions according to their past popularity. However, query popularity changes over time, and the ranking of candidates must be adjusted accordingly. For instance, while halloween might be the right suggestion after typing ha in October, harry potter might be better any other time. Surprisingly, despite the importance of QAC as a key feature in most online search engines, its temporal dynamics have been under-studied. In this paper, we propose a time-sensitive approach for query auto-completion. Instead of ranking candidates according to their past popularity, we apply time-series and rank candidates according their forecasted frequencies. Our experiments on 846K queries and their daily frequencies sampled over a period of 4.5 years show that predicting the popularity of queries solely based on their past frequency can be misleading, and the forecasts obtained by time-series modeling are substantially more reliable. Our results also suggest that modeling the temporal trends of queries can significantly improve the ranking of QAC candidates.},
+	urldate = {2018-01-26},
+	booktitle = {Proceedings of the 35th {International} {ACM} {SIGIR} {Conference} on {Research} and {Development} in {Information} {Retrieval}},
+	publisher = {ACM},
+	author = {Shokouhi, Milad and Radinsky, Kira},
+	year = {2012},
+	keywords = {query auto-completion, temporal ranking, time-series},
+	pages = {601--610},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/B5SNVAHZ/Shokouhi and Radinsky - 2012 - Time-sensitive Query Auto-completion.pdf:application/pdf}
+}
+
+
+@inproceedings{bar-yossef_context-sensitive_2011,
+	address = {New York, NY, USA},
+	series = {{WWW} '11},
+	title = {Context-sensitive {Query} {Auto}-completion},
+	isbn = {978-1-4503-0632-4},
+	url = {http://doi.acm.org/10.1145/1963405.1963424},
+	doi = {10.1145/1963405.1963424},
+	abstract = {Query auto completion is known to provide poor predictions of the user's query when her input prefix is very short (e.g., one or two characters). In this paper we show that context, such as the user's recent queries, can be used to improve the prediction quality considerably even for such short prefixes. We propose a context-sensitive query auto completion algorithm, NearestCompletion, which outputs the completions of the user's input that are most similar to the context queries. To measure similarity, we represent queries and contexts as high-dimensional term-weighted vectors and resort to cosine similarity. The mapping from queries to vectors is done through a new query expansion technique that we introduce, which expands a query by traversing the query recommendation tree rooted at the query. In order to evaluate our approach, we performed extensive experimentation over the public AOL query log. We demonstrate that when the recent user's queries are relevant to the current query she is typing, then after typing a single character, NearestCompletion's MRR is 48\% higher relative to the MRR of the standard MostPopularCompletion algorithm on average. When the context is irrelevant, however, NearestCompletion's MRR is essentially zero. To mitigate this problem, we propose HybridCompletion, which is a hybrid of NearestCompletion with MostPopularCompletion. HybridCompletion is shown to dominate both NearestCompletion and MostPopularCompletion, achieving a total improvement of 31.5\% in MRR relative to MostPopularCompletion on average.},
+	urldate = {2018-04-16},
+	booktitle = {Proceedings of the 20th {International} {Conference} on {World} {Wide} {Web}},
+	publisher = {ACM},
+	author = {Bar-Yossef, Ziv and Kraus, Naama},
+	year = {2011},
+	keywords = {context-awareness, query auto-completion, query expansion},
+	pages = {107--116},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/R7H8N654/Bar-Yossef and Kraus - 2011 - Context-sensitive Query Auto-completion.pdf:application/pdf}
+}
+
+@inproceedings{duan_online_2011,
+	address = {New York, NY, USA},
+	series = {{WWW} '11},
+	title = {Online {Spelling} {Correction} for {Query} {Completion}},
+	isbn = {978-1-4503-0632-4},
+	url = {http://doi.acm.org/10.1145/1963405.1963425},
+	doi = {10.1145/1963405.1963425},
+	abstract = {In this paper, we study the problem of online spelling correction for query completions. Misspelling is a common phenomenon among search engines queries. In order to help users effectively express their information needs, mechanisms for automatically correcting misspelled queries are required. Online spelling correction aims to provide spell corrected completion suggestions as a query is incrementally entered. As latency is crucial to the utility of the suggestions, such an algorithm needs to be not only accurate, but also efficient. To tackle this problem, we propose and study a generative model for input queries, based on a noisy channel transformation of the intended queries. Utilizing spelling correction pairs, we train a Markov n-gram transformation model that captures user spelling behavior in an unsupervised fashion. To find the top spell-corrected completion suggestions in real-time, we adapt the A* search algorithm with various pruning heuristics to dynamically expand the search space efficiently. Evaluation of the proposed methods demonstrates a substantial increase in the effectiveness of online spelling correction over existing techniques.},
+	urldate = {2018-04-16},
+	booktitle = {Proceedings of the 20th {International} {Conference} on {World} {Wide} {Web}},
+	publisher = {ACM},
+	author = {Duan, Huizhong and Hsu, Bo-June (Paul)},
+	year = {2011},
+	keywords = {a* search, query completion, spelling correction, transformation model},
+	pages = {117--126},
+	file = {ACM Full Text PDF:/home/tk/Zotero/storage/48883Q6M/Duan and Hsu - 2011 - Online Spelling Correction for Query Completion.pdf:application/pdf}
+}

@@ -79,64 +79,75 @@ term suggestion in math search.
 
 \section{Related Work}
 \subsection{Text query auto completion}
-\cite{cai_survey_2016}
-\cite{di_santo_comparing_2015}
-give a good summary on different auto-completion methods and their relevance
+Cai et al. \cite{cai_survey_2016} and Di Santo et al.  \cite{di_santo_comparing_2015}
+provide a good summary on different auto-completion methods and their relevance
 performance.
 \cite{di_santo_comparing_2015} focuses on ranking approaches for query suggestion.
 Methods can be divided into popularity-based, time-based and similarity-based.
 Popularity-based methods use the frequency of query candidates past popularity (MPC as referred by Bar-Yossef), or the document frequency of candidate query (Sentence occurrence) in the literature or
 query log. Term occurrence ranker (TO) introduces TF-IDF and combine it with term popularity.
-Time-based approaches base on session information, in time ranker (TR), ranker scores by the time elapsed from the most recent past occurrence in query log. Most-popular time ranker (MT) combines popularity with MT.
-Lastly, similarity-based methods weight query candidate by their similarity to user query log or the documents user previously clicked. The similarity can be measured by proximity (e.g. Near words), string similarity, or context similarity (e.g. N-Gram similarity, semantic similarity).
-For example, \cite{schmidt_context_sensitive_2016} uses entity to restrict suggestion results in a given category specified by user. 
-And in \cite{mitra_exploring_2015}, Convolutional Latent Semantic Model is applied for query reformulations similarity by offset of vector.
+Time-based approaches base on session information, in time ranker (TR), ranker scores by the time elapsed from the most recent past occurrence in query log.
+Most-popular time ranker (MT) combines pure popularity ranker and time ranker in form of convex combination: $MT(q) = 
+\alpha MP(q) + (1-\alpha) TR(q)$.
+Lastly, similarity-based methods weight query candidate by their similarity to user query log or the documents user previously clicked.
+
+Similarity can be measured by proximity (e.g. Near words), string similarity, or context similarity (e.g. N-Gram similarity, semantic similarity).
+For example, Schmidt et al. \cite{schmidt_context_sensitive_2016} uses entity to constrain suggestion results in a given category specified by user. 
+For example, after the user picked Donald Trump, an input prefix like “Sim” should not exactly prioritize famous singers like Paul Simon or Nina Simone, who are irrelevant to a politician.
+are important but totally unrelated to Trump. 
+In the work from Mitra, Bhaskar~\cite{mitra_exploring_2015}, Convolutional Latent Semantic Model is applied for query reformulations similarity by offset of vector.
 They train the data based on succession query pair in user session in addition to clickthrough data,
 to infer more contextually relevant query suggestions.
 They found context similarity is good at understanding the actual user intent when only a few characters have been entered in which case MPC will perform poorly.
+Because when only a few characters are available, context from previous session provides extra information to predict users' target query.
+The session pairs is randomly sampled from query log and they are each pair of observed queries from the same user.
+It is used capture the context information from their reformulation, for example, "New York" and "Newspaper" pair will find "New York Times" as the most similar target query in embedding space. 
 Reportedly, models trained on session pairs perform better than those trained on clickthrough data, and supervised learning-to-rank models perform better than
 those trained with similarity features alone.
-Search context can also be used to personalize query auto completion, this involves aggregating list of query logs in order to compare their hybrid similarity to search context.
+Search context can also be used to personalize query auto completion, since the query context from same person within a range of aggregated query logs are supposed to be similar.
 
-Survey \cite{cai_survey_2016} names alternative two broad categories: Heuristic models and learning based models, depending on applying machine learning method or not.
+Cai et al. \cite{cai_survey_2016} names alternative two broad categories: Heuristic models and learning based models, depending on applying machine learning method or not.
+The heuristic model includes categories of classical query autocompletion methods addressed in ~\cite{di_santo_comparing_2015}.
 The heuristic models are further divided into time-sensitive (e.g. MPC variances), and user-centered (e.g. personalization using session context~\cite{schmidt_context_sensitive_2016}).
 For example, user's implicit negative feedback such as skipped query completion, eye contact can also be used as feedback.
 Learning based models have adopted many features to evaluate suggestions, Likelihood ratio (LLR) and query relatedness are used in \cite{chien_semantic_2005} which captures a pair of query correlation based on their popularity behavior over time. Other learning features include user log features~\cite{kharitonov_user_2013}, query entity discover~\cite{guo_named_2009}, demographic-based features~\cite{shokouhi_learning_2013}, etc.
-\cite{kharitonov_user_2013} learns model from query log of Yandex,
+Kharitonov et al. \cite{kharitonov_user_2013} learns model from query log of Yandex (a popular search engine from Russian),
 it defines a query-term graph to model likelihood of a sequence of query prefix. Their
 method is basically searching in the graph the continuing paths with product of
-the probabilities of their edges are among the N highest, the procedure is able to
-prune candidate whose maximum probability is lower than the current candidate
-by depth-first search.
-The survey also relates the subtle differences between query suggestion, query expansion and query correction.
+the probabilities of their edges are among the N highest.
+The graph they build is based on the steps that at the etither examines the query suggested on the $j$th position or skips. They model user's behavior in a probability graph or Markovian process.
 
 \subsection{Evaluations}
 Cai et al. \cite{cai_survey_2016} covers evaluation for query auto completion extensively.
 It identifies three major query logs (AOL, MSN and SogouQ) used in query autocompletion training/evaluation.
 As for evaluation metrics, 
-it is acknowledged in \cite{bhatia_query_2011} that precision is much more important metric than recall as the number of suggestions can be offered is often very limited in space.
-Transitional retrieval evaluation metrics, such as MAP (Mean Average Precision), success rate at top-K (SR@K) and nDCG/$\alpha-$nDCG are also used to assess suggestion quality for diversified query autocompletion systems~\cite{cai_survey_2016}.
+it is acknowledged in \cite{bhatia_query_2011} that precision is much more important metric than recall as the number of suggestions can be offered is often very limited by the space of user interface.
+Tranditional retrieval evaluation metrics, such as MRR (Mean Reciprocal Rank),  MAP (Mean Average Precision), success rate at top-K (SR@K) and nDCG/$\alpha-$nDCG are also used to assess suggestion quality for diversified query autocompletion systems~\cite{cai_survey_2016}.
 Among these metrics, according to the survey, MRR is used widely as ``standard measurement'' where the rank of final query submitted by user (target query) is used to value query suggestions.
-Various forms of reciprocal rank are used, for example, \cite{bar-yossef_context-sensitive_2011} uses session log, the quality of suggestion is determined by reciprocal rank
+Various forms of reciprocal rank are used, for example, 
+Bar-Yossef et al. ~\cite{bar-yossef_context-sensitive_2011} uses session log, the quality of suggestion is determined by reciprocal rank
 of the user query, weighted by the number of completions given for a prefix. This addresses the different difficulty from completing different prefix (e.g. "prefix starting from z versus starting from c").
-\cite{kharitonov_user_2013} tries to propose a specific evaluation model for query autocompletion, it combines a user behaviour graph model and their key presses effort, their metrics can reflect user behaviour better on long queries.
-query clarity score  \cite{bhatia_query_2011, predicting_2002}, it increases as adding more specific terms that reduce query ambiguity.
 
-The other direction is assessing the efforts saved to help user complete target query. 
+Kharitonov et al. \cite{kharitonov_user_2013} use a metric which models user's effort to find the satisfactory result.
+They proposed metric \textit{pSaved} which equals to the probability of the user using the query suggestion functionality, another metric \textit{eSaved} 
+ uses the ratio of characters a user can skip inputting until the final submitted query.
+Similarly,
 MKS (Minimal Keystrokes) by \cite{duan_online_2011}
 is used in query suggestion system evaluations~\cite{kharitonov_user_2013}, although it is initially proposed to evaluate the query misspelling correction algorithm.
 
+Bhatia et al. ~\cite{bhatia_query_2011} uses the \textit{query ambiguity} metric proposed by Cronen-Townsend et al. \cite{predicting_2002}, to measure query suggestion ambiguity by evaluting if the retrieval would performance better (computed as the Kullback-Leibler divergence between the query and collection language model) if query suggestion terms that added to the orignal partial user query.
 
 
 \subsection{Text QAC Problems}
 Unseen prefixes is one common issue in text query auto completion.
 In typical query auto-completion systems, candidate query are generated from prefix lookup against candidate query set (e.g. query log), however, these systems
  can only recommend queries for prefixes that have been previously seen by the search engine with adequate frequency.
-\cite{mitra_query_2015} explores the idea to use suffixes that are popular n-grams and append it to current query prefix.
-Their experiment shows, compared to baseline setting in, their model is as good as MPC for previously seen queries and outperform MPC by 43\% in MRR for previously unseen queries.
-\cite{park_neural_2017} proposes a language model that employs  recurrent neural network to resolve the dimensionality problem with a distributed representation of text.
+Mitra et al. ~\cite{mitra_query_2015} explores the idea to use suffixes that are popular n-grams and append it to current query prefix.
+Their experiment shows, compared to baseline setting, their model is able to significantly improve MRR for rare and unseen prefixes (by utilizing the suffix information).
+%
+Park et al. \cite{park_neural_2017} proposes a language model that employs  recurrent neural network to resolve the dimensionality problem with a distributed representation of text.
 It shows this can boost the query suggestion for both seen and unseen prefixes.
-This study, unlike term-level query auto completion in \cite{vargas_term-by-term_2016}, can handle Out-of-Vocabulary words because of character-level query completion.
+This study, unlike term-by-term query auto completion in \cite{vargas_term-by-term_2016}, can handle Out-of-Vocabulary words because of character-by-character query completion.
 On the other hand, for many popularity based methods, the models assume the current query popularity distribution will remain the same as that previously observed but this is not suitable for time-sensitive changes such as breaking news topic. This is addressed by only take a window size of past query log evidence to improve temporal sensitivity of popularity based methods~\cite{cai_survey_2016}.
 Another approach to address time temporal issue is using time-series analysis, and put emphasis on ``trending'' keywords~\cite{shokouhi_detecting_2011}.
 Research in this direction tries to detect ``bursts'' in query frequencies of recent query log.
@@ -145,10 +156,13 @@ Research in this direction tries to detect ``bursts'' in query frequencies of re
 Math formula autocompletion is a new research domain, to my best knowledge, there is no paper published in this particular area. 
 Popular math search system WolframAlpha supports math expression autocompletion, although their system is closed, we can observe the query candidates is filtered by matching string prefix of math expressions. 
 Thus, math expressions with commutative operator or using a different set of symbols will not show up as suggestions.
-We argue that math formula autocompletion should be aware of the unique characters of math expression such as community, associativity, sub-expression similarity (one expression is relevant to the other by being a subexpression, and a subexpression can match any place in the middle, not necessarily match the prefix) and symbol set unification (symbols can be used interchangeably across similar math expressions).
+We argue that math formula autocompletion should be aware of the unique characteristics of math expression such as community, associativity, sub-expression similarity (one expression is relevant to the other by being a subexpression, and a subexpression can match any place in the middle, not necessarily match the prefix) and symbol set unification (symbols can be used interchangeably across similar math expressions).
 Given these, the uniqueness of math expression remains to be defined in the query autocompletion context, since math expressions with same meaning may have different string representations. Otherwise the MPC method used in normal text completion cannot simply be applied in math query autocompletion.
 
-Dealing with math formula autocompletion may need to use existing math formula search engines or utilize some graph-based database (such as Neo4j) to identify the unique math expressions/subexpressions and retrieve similar math expressions by subexpressions (rather than using string prefix/suffix).
+Dealing with math formula autocompletion may need to use existing math formula search engines or utilize some graph-based database (such as Neo4j~\footnote{https://neo4j.com}) to identify the unique math expressions/subexpressions and retrieve similar math expressions by subexpressions (rather than using string prefix/suffix).
+Furthermore, formula autocompletion may also have to deal with unseen subexpression completion (similar to the unseen prefix issue in text QAC), one possible strategy to this problem in math is to match  expression with more tolerance in structure and combine semantic embedding similarity to broaden the boundary of only suggesting formula queries to also suggesting text queries.
+Also, the absence of query log data in math search is another issue.
+As my first attempt, in this paper I simply use corpus data and replace query log for dataset.
 
 \section{Methodology and implementation}
 Most popular completion (MPC) is most commonly used metrics to generate query completion from query
@@ -451,6 +465,7 @@ For relative more complete input queries, the completion results are more constr
 From these results we can know that it might be worth investing for future research that,
 either use different model for different stage of input or come up a better scoring formula that
 penalize more on symbol set similarity when input query is far from complete.
+On the other hand, query candidates with prefix matched exactly will presumably make more sense, e.g., $a^2 + $ yields $a^2 + b^2 $ instead of $x^2 + y^2$ although the latter matches structurely. 
 It is also important to try to speedup the identification of uniqueness and test if an existing unification equivalent expression has been already indexed. Since the current index method needs to perform a similarity search on existing index which is very costly if it is performed for every indexing formula.
 
 \section{Conclusion}

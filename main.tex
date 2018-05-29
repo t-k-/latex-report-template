@@ -36,39 +36,46 @@
 
 \begin{document}
 
-\section*{Review on embedding-based autocompletion} % Major section
+\section*{Summer Plan - Wei} % Major section
 
-Embedding technology has been studied by many studies.
-Same idea from those studies can be used to tag math expressions so that autocompletion can actually associate text tag with a formula, in this we may increase the suggestion set for a math query in either text or formula.
+\begin{itemize}
+	\item Effectiveness
+		\begin{itemize}
+		\item wildcards support under new model [2 weeks]
+		\item evaluation NTCIR-12 wildcard [3 days, may find technical issues to fix]
+		\item explore methods to index operator symbols [2 days]
+		\item operator similarity awareness retrieval [2 weeks, require new index schema]
+		\item evaluation on new system with operator awareness [1 day]
+		\end{itemize}
+	\item Efficiency (Make system demo appealing to others) 
+		\begin{itemize}
+		\item rewrite posting list to make it more generic, so that it can handle math posting. [1 week]
+		\item enable math posting list caching (put into memory, real search engine all do this, will boost the performance very much) [3 days]
+		\item in-memory compression (good for publishing paper on compressing math posting list) [1 week]
+		\begin{itemize}
+			\item This can both reduce indexing time and query run time
+		\end{itemize}
+		\end{itemize}
+	\item Code readability (Make others willing to build new idea on top of our code)
+		\begin{itemize}
+			\item Preprocessor (put declarations in .c files, no need to edit .h files, create a nice foundation to rewrite some messy part of the code, make other people easy to add things)
+			\begin{itemize}
+				\item support foreach to reduce callback functions in codebase [1 day, already implemented a prototype]
+				\item string, dictionary utilities to make code much more clean. [3 days]
+				\item support header file generation and automatic header dependency resolution. [3 days]
+				\item apply preprocessor to current code frame. [1 day, write makefile rules]
+				\item Later gradually rewrite badly-written components. [future research]
+			\end{itemize}
+		\end{itemize}
+		\item Documentation: Document on how to configure, generate results and evaluate scores under new model (many new steps added on original Approach0). Publish the document on the Internet. [1 day]
+\end{itemize}
 
-[1] is a very early exploration on tag recommendation using embedding, 
-it uses (words, docs, tags) triplet to tag training document, and cluster them by Spectral Recursive Embedding.
-They reviewed the methods used to tag document, first method is to use low rank matrix (e.g. SVD or near-optimal approximation CUR) to compute a matrix whose eigenvalues approximate that of a document matrix. The author uses a symmetric matrix approximation method called Lanczos. The Spectral Recursive Embedding is used to partition bipartite graph. They also define a function in 2D domain to evaluate a combination of precision and recall.
-A document is represented by words and tags annotated by users, they can further be represented in a bipartite graph with terms, document and weight of document.
-Usually \textbf{collaborative filtering} is used to generate tags given query and training documents where they suggest the top ranked tags from most similar document. However, this method is not efficient for real-world scenarios. The authors adapt Poisson mixture model to handle this disadvantage.
-For new document, they use Bayes rule to estimate prior probabilities for each class and rank by probability.
+Preferred focus order:
+\begin{enumerate}
+\item Code readability [Preprocessor would not take too much time, it is worth investing]
+\item Documentation
+\item Effectiveness 
+\item Efficiency 
+\end{enumerate}
 
-[2] argues lexical features like string matching do not capture semantic similarity beyond trivial level. \textbf{Word embeddings} is Terms are represented in semantic space as vectors such that similarity in semantic level can be meaningfully represented [3, 4]. 
-Some word embedding is based on the insight to use external sources of semantic knowledge such as Wikipedia.
-Latent semantic analysis (LSA) incorporate words appearing in similar contexts tend to have similar meaning, so they use distance between word vectors as proxy for semantic similarity. Continuous bad-of-words (CBOW) and Skip-gram are variation from neural network language model, where a word is predicted from its surrounding words. Another approach is negative sampling, where words next to each other are used as positive examples and random ordered words are sampled as negative examples.
-Several development has been trying to extend word level semantics to phrase sentence or even document-level.
-For out-of-vocabulary words is mapped to random vectors and remember which OOV maps to which random vector. This can help important semantic such as names of persons to relate their appearing in different text.
-In [4], Unfolding recursive autoencoder (RAE) is used. In order to keep arbitrary length of two sentences, they use dynamic polling layer which output a fixed-size representation. Any classify can be used to test if two sentences are paraphrases or not. The RAE uses tree structure representation of sentence, learns a vector to represent its direct children using auto-encoder. The overall error to minimize is the sum error of all children node. After learning, unfold each node vector with the same tree structure as during encoding. The unfolding is important to capture the entire subtree to the leaf nodes.
-In earlier research the vector dimension vary based on the sentence, dynamic pooling is then used to map a larger feature matrix to smaller matrix applying min/max function with a sub-region. After pooling, they normalize each entry to have 0 mean and variance 1.
-The Distributed memory model of Paragraph Vectors (PV-DM) used in [3], first obtain vector on already seen part from paragraph, and add more columns in paragraph vector. In this way it produce a far less sized dimension than bag-of-n-gram features.
-
-[5] uses session information to construction query reformulation vectors where each reformulation is dependent on two previous user query history. This information helps their QAC MRR performance improve more than 10\% over a supervised ranker baseline.
-
-\section{Reference}
-{\setlength{\parindent}{0cm}
-[1] Song, Yang, Ziming Zhuang, Huajing Li, Qiankun Zhao, Jia Li, Wang-Chien Lee, and C. Lee Giles. “Real-Time Automatic Tag Recommendation.” In Proceedings of the 31st Annual International ACM SIGIR Conference on Research and Development in Information Retrieval, 515–522. SIGIR ’08. New York, NY, USA: ACM, 2008. https://doi.org/10.1145/1390334.1390423.
-
-[2] Kenter, Tom, and Maarten de Rijke. “Short Text Similarity with Word Embeddings.” In Proceedings of the 24th ACM International on Conference on Information and Knowledge Management, 1411–1420. CIKM ’15. New York, NY, USA: ACM, 2015. https://doi.org/10.1145/2806416.2806475.
-
-[3] Le, Quoc V., and Tomas Mikolov. “Distributed Representations of Sentences and Documents.” ArXiv:1405.4053 [Cs], May 16, 2014. http://arxiv.org/abs/1405.4053.
-
-[4] Socher, Richard, Eric H. Huang, Jeffrey Pennington, Andrew Y. Ng, and Christopher D. Manning. “Dynamic Pooling and Unfolding Recursive Autoencoders for Paraphrase Detection.” In Proceedings of the 24th International Conference on Neural Information Processing Systems, 801–809. NIPS’11. USA: Curran Associates Inc., 2011. http://dl.acm.org/citation.cfm?id=2986459.2986549.
-
-[5] Mitra, Bhaskar. “Exploring Session Context Using Distributed Representations of Queries and Reformulations.” In Proceedings of the 38th International ACM SIGIR Conference on Research and Development in Information Retrieval, 3–12. SIGIR ’15. New York, NY, USA: ACM, 2015. https://doi.org/10.1145/2766462.2767702.
-
-} \end{document}
+\end{document}
